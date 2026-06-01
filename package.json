@@ -1,0 +1,19 @@
+{
+  "name": "modrinth-collection-description",
+  "version": "1.0.0",
+  "description": "Collect every mods description and create markdown file for explaining what they do.",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "node-fetch": "^3.3.2",
+    "ollama": "^0.6.3",
+    "puppeteer": "^25.1.0"
+  }
+}
