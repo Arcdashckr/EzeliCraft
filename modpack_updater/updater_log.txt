@@ -1,0 +1,111 @@
+C:\Users\hazar\Documents\GitHub\EzeliCraft\modpack_updater>pyinstaller --onefile --noconsole --name="Modpack_Guncelleyici" updater.py
+
+The 'pathlib' package is an obsolete backport of a standard library package and is incompatible with PyInstaller. Please remove this package (located in C:\Users\hazar\AppData\Local\Programs\Python\Python311\Lib\site-packages) using
+
+    "C:\Users\hazar\AppData\Local\Programs\Python\Python311\python.exe" -m pip uninstall pathlib
+
+then try again.
+
+
+
+C:\Users\hazar\Documents\GitHub\EzeliCraft\modpack_updater>"C:\Users\hazar\AppData\Local\Programs\Python\Python311\python.exe" -m pip uninstall pathlib
+
+Found existing installation: pathlib 1.0.1
+
+Uninstalling pathlib-1.0.1:
+
+  Would remove:
+
+    c:\users\hazar\appdata\local\programs\python\python311\lib\site-packages\pathlib-1.0.1.dist-info\*
+
+    c:\users\hazar\appdata\local\programs\python\python311\lib\site-packages\pathlib.py
+
+Proceed (Y/n)? y
+
+  Successfully uninstalled pathlib-1.0.1
+
+
+
+C:\Users\hazar\Documents\GitHub\EzeliCraft\modpack_updater>pyinstaller --onefile --noconsole --name="Modpack_Guncelleyici" updater.py
+
+30 DEPRECATION: Running PyInstaller as admin is not necessary nor sensible. Run PyInstaller from a non-administrator terminal. PyInstaller 7.0 will block this.
+
+338 INFO: PyInstaller: 6.8.0, contrib hooks: 2024.7
+
+338 INFO: Python: 3.11.2
+
+345 INFO: Platform: Windows-10-10.0.19045-SP0
+
+345 INFO: Python environment: C:\Users\hazar\AppData\Local\Programs\Python\Python311
+
+346 INFO: wrote C:\Users\hazar\Documents\GitHub\EzeliCraft\modpack_updater\Modpack_Guncelleyici.spec
+
+354 INFO: Module search paths (PYTHONPATH):
+
+['C:\\Users\\hazar\\AppData\\Local\\Programs\\Python\\Python311\\Scripts\\pyinstaller.exe',
+
+ 'C:\\Users\\hazar\\AppData\\Local\\Programs\\Python\\Python311\\python311.zip',
+
+ 'C:\\Users\\hazar\\AppData\\Local\\Programs\\Python\\Python311\\DLLs',
+
+ 'C:\\Users\\hazar\\AppData\\Local\\Programs\\Python\\Python311\\Lib',
+
+ 'C:\\Users\\hazar\\AppData\\Local\\Programs\\Python\\Python311',
+
+ 'C:\\Users\\hazar\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages',
+
+ 'C:\\Users\\hazar\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\win32',
+
+ 'C:\\Users\\hazar\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\win32\\lib',
+
+ 'C:\\Users\\hazar\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\Pythonwin',
+
+ 'C:\\Users\\hazar\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\setuptools\\_vendor',
+
+ 'C:\\Users\\hazar\\Documents\\GitHub\\EzeliCraft\\modpack_updater']
+
+1304 INFO: checking Analysis
+
+1304 INFO: Building Analysis because Analysis-00.toc is non existent
+
+1304 INFO: Running Analysis Analysis-00.toc
+
+1304 INFO: Target bytecode optimization level: 0
+
+1305 INFO: Initializing module dependency graph...
+
+1305 INFO: Caching module graph hooks...
+
+1328 INFO: Analyzing base_library.zip ...
+
+2198 INFO: Loading module hook 'hook-heapq.py' from 'C:\\Users\\hazar\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'...
+
+2283 INFO: Loading module hook 'hook-encodings.py' from 'C:\\Users\\hazar\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'...
+
+3612 INFO: Loading module hook 'hook-pickle.py' from 'C:\\Users\\hazar\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\PyInstaller\\hooks'...
+
+5801 INFO: Caching module dependency graph...
+
+5871 INFO: Looking for Python shared library...
+
+5877 INFO: Using Python shared library: C:\Users\hazar\AppData\Local\Programs\Python\Python311\python311.dll
+
+5878 INFO: Analyzing C:\Users\hazar\Documents\GitHub\EzeliCraft\modpack_updater\updater.py
+
+
+
+Syntax error in C:\Users\hazar\Documents\GitHub\EzeliCraft\modpack_updater\updater.py
+
+  File "C:\Users\hazar\Documents\GitHub\EzeliCraft\modpack_updater\updater.py", line 13
+
+     self.root.geometry(500x350)
+
+                          ^
+
+ SyntaxError: invalid decimal literal
+
+
+
+
+
+C:\Users\hazar\Documents\GitHub\EzeliCraft\modpack_updater>
