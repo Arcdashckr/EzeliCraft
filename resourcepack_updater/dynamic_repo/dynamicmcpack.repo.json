@@ -1,0 +1,22 @@
+{
+  "formatVersion": 1,
+  "build": 1,
+  "name": "EzeliCraft DynamicPack Repo",
+  "minimal_mod_build": 0,
+  "contents": [
+    {
+      "id": "ec_sezonascend_main",
+      "url": "content_ec_sezonascend_main.json",
+      "hash": "2ef80d249e79fcb7cf1ba8dd7c75771e2206e457",
+      "required": true,
+      "name": "EC_SezonAscend_Main"
+    },
+    {
+      "id": "ec_sezonreborn_panorama",
+      "url": "content_ec_sezonreborn_panorama.json",
+      "hash": "1c6399c90928ff27ba5b81201d27a8c03c568f1a",
+      "required": true,
+      "name": "EC_SezonReborn_Panorama"
+    }
+  ]
+}
