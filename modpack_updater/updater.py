@@ -11,7 +11,7 @@ from threading import Thread
 
 # ⚠️ GITHUB'DAKİ version.json DOSYASININ "RAW" LİNKİ
 JSON_URL = "https://raw.githubusercontent.com/Arcdashckr/EzeliCraft/main/modpack_updater/version.json"
-CURRENT_UPDATER_VERSION = "2.0.7"
+CURRENT_UPDATER_VERSION = "2.0.8"
 
 class IncrementalLauncherApp:
     def __init__(self, root):
@@ -38,7 +38,10 @@ class IncrementalLauncherApp:
         self.remote_data = {}
         
         self.create_widgets()
-        Thread(target=self.check_launcher_update_and_load, daemon=True).start()
+        
+        # İlk açılışta klasördeki isim karmaşasını ve eski exe'leri temizleme/düzeltme kontrolü
+        if self.sanitize_folder_on_startup():
+            Thread(target=self.check_launcher_update_and_load, daemon=True).start()
 
     def create_widgets(self):
         self.title_frame = tk.Frame(self.root, bg=self.bg_color)
@@ -70,16 +73,51 @@ class IncrementalLauncherApp:
         self.btn_update = tk.Button(self.root, text="Güncellemeyi Denetle", font=("Helvetica", 11, "bold"), bg="#45475a", fg=self.bg_color, activebackground=self.accent_color, activeforeground=self.bg_color, bd=0, padx=25, pady=8, state="disabled")
         self.btn_update.pack(pady=10)
 
+    def sanitize_folder_on_startup(self):
+        """Açılışta eski dosyaları siler, eğer geçici/hatalı exe açıldıysa kendini v2 yapıp yeniden başlatır."""
+        current_exe = sys.executable
+        if not current_exe.endswith(".exe"):
+            return True # Geliştirici modundaysa pas geç
+            
+        current_exe_name = os.path.basename(current_exe)
+        final_exe_path = os.path.join(self.current_dir, "Modpack_Guncelleyici_v2.exe")
+        
+        # 1. Klasördeki artık eski sürümleri temizle
+        for old_name in ["Modpack_Guncelleyici_MANUEL.exe", "Modpack_Guncelleyici_OTOMATİK.exe"]:
+            old_path = os.path.join(self.current_dir, old_name)
+            if os.path.exists(old_path) and current_exe_name != old_name:
+                try: os.remove(old_path)
+                except: pass
+
+        # 2. Eğer şu anki çalışan dosya _yeni veya _temp uzantılı bir dosya ise adını düzelt
+        if "_yeni.exe" in current_exe_name.lower() or "_temp_" in current_exe_name.lower():
+            pid = os.getpid()
+            ps_script = f"""
+            Start-Sleep -Seconds 1
+            $proc = Get-Process -Id {pid} -ErrorAction SilentlyContinue
+            if ($proc) {{ $proc | Wait-Process -Timeout 5 }}
+            if (Test-Path "{final_exe_path}") {{ Remove-Item "{final_exe_path}" -Force }}
+            Rename-Item "{current_exe}" "Modpack_Guncelleyici_v2.exe" -Force
+            Start-Process "{final_exe_path}"
+            """
+            subprocess.Popen(["powershell", "-Command", ps_script], creationflags=subprocess.CREATE_NO_WINDOW)
+            self.root.destroy()
+            sys.exit(0)
+            return False
+            
+        return True
+
     def check_launcher_update_and_load(self):
         try:
             req = urllib.request.Request(JSON_URL, headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req) as response:
                 self.remote_data = json.loads(response.read().decode('utf-8'))
             
-            # --- PROGRAMIN KENDİ KENDİNİ GÜNCELLEMESİ (ZAMAN DAMGALI & ESKİLERİ TEMİZLEYEN) ---
+            # --- PROGRAMIN KENDİ KENDİNİ GÜNCELLEMESİ (SÜRÜM BİLGİSİ YAZAN GÜVENLİ MODEL) ---
             remote_updater_ver = self.remote_data.get("updater_version", "1.0.0")
             if remote_updater_ver != CURRENT_UPDATER_VERSION:
-                self.status_label.config(text="Launcher yeni sürüme yükseltiliyor, lütfen bekleyin...", fg=self.accent_color)
+                # Ekrana yeni bulunan hedef sürümü yazdırıyoruz
+                self.status_label.config(text=f"Launcher yeni sürüme (v{remote_updater_ver}) yükseltiliyor...", fg=self.accent_color)
                 self.root.update_idletasks()
                 
                 current_exe = sys.executable
@@ -100,17 +138,12 @@ class IncrementalLauncherApp:
                     pid = os.getpid()
                     final_exe_name = os.path.join(self.current_dir, "Modpack_Guncelleyici_v2.exe")
                     
-                    old_manuel = os.path.join(self.current_dir, "Modpack_Guncelleyici_MANUEL.exe")
-                    old_otomatik = os.path.join(self.current_dir, "Modpack_Guncelleyici_OTOMATİK.exe")
-                    
                     ps_script = f"""
                     Start-Sleep -Seconds 1
                     $proc = Get-Process -Id {pid} -ErrorAction SilentlyContinue
                     if ($proc) {{ $proc | Wait-Process -Timeout 5 }}
                     if (Test-Path "{current_exe}") {{ Remove-Item "{current_exe}" -Force }}
                     if (Test-Path "{final_exe_name}") {{ Remove-Item "{final_exe_name}" -Force }}
-                    if (Test-Path "{old_manuel}") {{ Remove-Item "{old_manuel}" -Force }}
-                    if (Test-Path "{old_otomatik}") {{ Remove-Item "{old_otomatik}" -Force }}
                     Rename-Item "{new_exe_path}" "Modpack_Guncelleyici_v2.exe" -Force
                     Start-Process "{final_exe_name}"
                     """
@@ -241,10 +274,8 @@ class IncrementalLauncherApp:
 
             if os.path.exists(zip_path): os.remove(zip_path)
 
-            # --- OPTIONS.TXT ENTEGRASYONU ---
             self.update_options_txt()
 
-            # --- DELETED_FILES SİLME DÖNGÜSÜ ---
             self.status_label.config(text="Eski ve kaldırılan dosyalar temizleniyor...")
             self.progress['value'] = 95
             self.root.update_idletasks()
