@@ -11,7 +11,7 @@ from threading import Thread
 
 # ⚠️ GITHUB'DAKİ version.json DOSYASININ "RAW" LİNKİ
 JSON_URL = "https://raw.githubusercontent.com/Arcdashckr/EzeliCraft/main/modpack_updater/version.json"
-CURRENT_UPDATER_VERSION = "2.0.1"  # Bu sürüm numarasını güncel tutun
+CURRENT_UPDATER_VERSION = "2.0.2"  # Bu sürüm numarasını güncel tutun
 
 class IncrementalLauncherApp:
     def __init__(self, root):
@@ -190,6 +190,8 @@ class IncrementalLauncherApp:
                 elif os.path.isdir(full_del_path):
                     shutil.rmtree(full_del_path)
 
+            self.update_options_txt()
+
             # Sürümü yerel dosyaya yaz
             local_version_path = os.path.join(self.current_dir, "local_version.json")
             with open(local_version_path, 'w') as f:
@@ -207,6 +209,37 @@ class IncrementalLauncherApp:
                 try: os.remove(zip_path)
                 except: pass
             self.btn_update.config(state="normal")
+            
+    def update_options_txt(self):
+        options_path = os.path.join(self.current_dir, "minecraft", "options.txt")
+        options_updates = self.remote_data.get("options_updates", {})
+        
+        if not options_updates or not os.path.exists(options_path):
+            return  # Güncellenecek tuş yoksa veya options.txt bulunamadıysa geç
+            
+        try:
+            self.status_label.config(text="options.txt tuş atamaları optimize ediliyor...")
+            self.root.update_idletasks()
+            
+            # 1. Mevcut ayarları oku
+            current_settings = {}
+            with open(options_path, 'r', encoding='utf-8', errors='ignore') as f:
+                for line in f:
+                    if ":" in line:
+                        key, val = line.strip().split(":", 1)
+                        current_settings[key] = val
+            
+            # 2. Sadece JSON'dan gelenleri ekle veya değiştir
+            for key, val in options_updates.items():
+                current_settings[key] = val
+                
+            # 3. Geriye options.txt olarak kaydet
+            with open(options_path, 'w', encoding='utf-8') as f:
+                for key, val in current_settings.items():
+                    f.write(f"{key}:{val}\n")
+                    
+        except Exception as e:
+            print(f"options.txt güncellenirken hata: {e}")
 
 if __name__ == "__main__":
     root = tk.Tk()

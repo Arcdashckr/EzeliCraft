@@ -1,18 +1,38 @@
 {
   "modpack_version": "2.4.2",
-  "modpack_url": "https://download1476.mediafire.com/g6yn6nfolr1gS7H7zaPKHtFvWQ2IjP6jpodo3WfTt8LgTnVTDVQRy82dfkg6NQgM_M4xUPjntcjX1QVnj_WFajMIpoI0EdJgJbus0AtxP4QUI7JvEDenal0PB30JDzxgLZ81m2MBWI811yvd9w9ZraLQi4yQPX3EcS3dJDayJdQ/i7nqemzasgx1amf/EzeliCraft_Modpack_G%C3%BCncelleme_v2.4.2.zip",
-  "updater_version": "2.0.1",
+  "modpack_url": "https://download1476.mediafire.com/rtrwvzm5qixgAiRYPDaKIejDIHLaYV_PZipXGealmD-buge70FS4HWBaNoOBjUjGrR1n-BukxePt90BNZBVdJIU6SCvgFRg_hhpy3JE0fa1SIWe1mNQPgA5ySHVpzrlPXrxvpar8KMXYQR0uCE0FjJmANetFexqAS_svySvEZHg/i7nqemzasgx1amf/EzeliCraft_Modpack_G%C3%BCncelleme_v2.4.2.zip",
+  "updater_version": "2.0.2",
   "updater_url": "https://raw.githubusercontent.com/Arcdashckr/EzeliCraft/main/modpack_updater/dist/Modpack_Guncelleyici_v2.exe",
   "changelog": [
-    "• FancyMenu sürümü ve eksik configleri yenilenip eklendi.",
-    "• options.txt güncellendi (Yeni tuş atamaları eklendi, ayarlarınız sıfırlandı).",
-    "• Global harita eklendi (M tuşu ile açılıyor).",
-    "• Güncelleyici yeni sürüme yükseltildi ve artık kendini güncelleyebiliyor."
+    "• Hoofprint Global harita eklendi. M tuşu ile açabilirsiniz.",
+    "• Güncelleyici yeni sürüme yükseltildi ve artık kendini güncelleyebiliyor.",
+    "• Distraction Free Recipes modu kaldırıldı.",
+    "• FancyMenu ve Drippy Loading Screen modunun sürümü güncellendi.",
+    "• Better Advancements modu kaldırıldı ve yerine Advancements Reloaded modu eklendi.",
+    "• Artık L tuşu ile başarımlara bakabilirsiniz.",
+    "• Artık F9 tuşu ile waypointlerin oyunda gözükmesini açıp/kapatabilirsiniz.",
+    "• Artık F10 tuşu ile waypoint listesini açıp/kapatabilirsiniz.",
+    "• Artık Ç tuşu ile mikrofonu muteleyebilirsiniz.",
+    "• Artık Ş tuşu ile sesli sohbeti sağırlaştırabilirsiniz.",
+    "• Artık H tuşu ile JEI arama çubuğuna odaklanabilirsiniz.",
+    "• Artık , (virgül) tuşu ile Isometric Renders modunda alan seçimi yapabilirsiniz.",
+    " İzometrik render için alan seçtikten sonra /isorender area komutunu kullanın."
   ],
   "deleted_files": [
     "minecraft/mods/distraction_free_recipes-fabric-1.2.1-1.21.1.jar",
     "minecraft/mods/fancymenu_fabric_3.2.5_MC_1.21.jar",
     "minecraft/mods/drippyloadingscreen_fabric_3.0.7_MC_1.21.jar",
     "minecraft/mods/BetterAdvancements-Fabric-1.21.1-0.4.3.21.jar"
-  ]
+  ],
+  "options_updates": {
+    "key_key.advancements":  "key.keyboard.l",
+    "key_key.disable_voice_chat":  "key.keyboard.period",
+    "key_key.hoofprint.open":  "key.keyboard.m",
+    "key_key.immersiveminimaps.cave_mode":  "key.keyboard.backspace",
+    "key_key.immersiveminimaps.zoom_in":  "key.keyboard.equal",
+    "key_key.immersiveminimaps.zoom_out":  "key.keyboard.minus",
+    "key_key.isometric-renders.area_select":  "key.keyboard.backslash",
+    "key_key.jei.focusSearch":  "key.keyboard.h",
+    "key_key.mute_microphone":  "key.keyboard.semicolon"
+  }
 }

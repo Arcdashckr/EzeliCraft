@@ -1,0 +1,11 @@
+﻿{
+    "key_key.mute_microphone":  "key.keyboard.semicolon",
+    "key_key.jei.focusSearch":  "key.keyboard.h",
+    "key_key.hoofprint.open":  "key.keyboard.m",
+    "key_key.advancements":  "key.keyboard.l",
+    "key_key.disable_voice_chat":  "key.keyboard.period",
+    "key_key.immersiveminimaps.cave_mode":  "key.keyboard.backspace",
+    "key_key.immersiveminimaps.zoom_out":  "key.keyboard.minus",
+    "key_key.isometric-renders.area_select":  "key.keyboard.backslash",
+    "key_key.immersiveminimaps.zoom_in":  "key.keyboard.equal"
+}
