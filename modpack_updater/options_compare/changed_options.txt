@@ -1,13 +1,13 @@
-﻿==================================================
-        OPTIONS.TXT KARÅILAÅTIRMA RAPORU        
+==================================================
+         OPTIONS.TXT COMPARISON REPORT            
 ==================================================
 
-[DEÄÄ°ÅTÄ°] key_key.mute_microphone : key.keyboard.f8 -> key.keyboard.semicolon
-[DEÄÄ°ÅTÄ°] key_key.jei.focusSearch : key.keyboard.unknown -> key.keyboard.h
-[YENÄ° EKLENDÄ°] key_key.hoofprint.open : key.keyboard.m
-[DEÄÄ°ÅTÄ°] key_key.advancements : key.keyboard.unknown -> key.keyboard.l
-[DEÄÄ°ÅTÄ°] key_key.disable_voice_chat : key.keyboard.unknown -> key.keyboard.period
-[YENÄ° EKLENDÄ°] key_key.immersiveminimaps.cave_mode : key.keyboard.backspace
-[YENÄ° EKLENDÄ°] key_key.immersiveminimaps.zoom_out : key.keyboard.minus
-[DEÄÄ°ÅTÄ°] key_key.isometric-renders.area_select : key.keyboard.unknown -> key.keyboard.backslash
-[YENÄ° EKLENDÄ°] key_key.immersiveminimaps.zoom_in : key.keyboard.equal
+[~] CHANGED -> key_key.mute_microphone : key.keyboard.f8 -> key.keyboard.semicolon
+[~] CHANGED -> key_key.jei.focusSearch : key.keyboard.unknown -> key.keyboard.h
+[+] NEW -> key_key.hoofprint.open : key.keyboard.m
+[~] CHANGED -> key_key.advancements : key.keyboard.unknown -> key.keyboard.l
+[~] CHANGED -> key_key.disable_voice_chat : key.keyboard.unknown -> key.keyboard.period
+[+] NEW -> key_key.immersiveminimaps.cave_mode : key.keyboard.backspace
+[+] NEW -> key_key.immersiveminimaps.zoom_out : key.keyboard.minus
+[~] CHANGED -> key_key.isometric-renders.area_select : key.keyboard.unknown -> key.keyboard.backslash
+[+] NEW -> key_key.immersiveminimaps.zoom_in : key.keyboard.equal
