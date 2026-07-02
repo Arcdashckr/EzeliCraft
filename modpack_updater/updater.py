@@ -11,7 +11,7 @@ from threading import Thread
 
 # ⚠️ GITHUB'DAKİ version.json DOSYASININ "RAW" LİNKİ
 JSON_URL = "https://raw.githubusercontent.com/Arcdashckr/EzeliCraft/main/modpack_updater/version.json"
-CURRENT_UPDATER_VERSION = "2.0.2"  # Bu sürüm numarasını güncel tutun
+CURRENT_UPDATER_VERSION = "2.0.3"  # Bu sürüm numarasını güncel tutun
 
 class IncrementalLauncherApp:
     def __init__(self, root):
@@ -85,7 +85,22 @@ class IncrementalLauncherApp:
                 new_exe = current_exe.replace(".exe", "_yeni.exe")
                 if not new_exe.endswith("_yeni.exe"): new_exe = "Modpack_Guncelleyici_yeni.exe"
                 
-                urllib.request.urlretrieve(updater_url, new_exe)
+                try:
+                    self.status_label.config(text="Sunucuya bağlanılıyor...")
+                    if os.path.exists(zip_path): os.remove(zip_path)
+
+                    # MediaFire'ı kandırmak için tarayıcı başlıkları (User-Agent) ekliyoruz
+                    opener = urllib.request.build_opener()
+                    opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')]
+                    urllib.request.install_opener(opener)
+
+                    # İndirmeyi başlat
+                    urllib.request.urlretrieve(modpack_url, zip_path, reporthook=self.download_progress)
+                except Exception as e:
+                    self.status_label.config(text=f"Güncelleme indirilemedi: {str(e)}", fg=self.error_color)
+                    messagebox.showerror("Hata", f"Güncelleme indirilemedi:\n{str(e)}")
+                    return
+                
                 batch_cmd = f'timeout /t 1 && del "{current_exe}" && move "{new_exe}" "{current_exe}" && start "" "{current_exe}" && del "%~f0"'
                 subprocess.Popen(f'cmd.exe /c {batch_cmd}', shell=True)
                 self.root.quit()
