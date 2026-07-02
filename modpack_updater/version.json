@@ -2,7 +2,7 @@
   "modpack_version": "2.4.2",
   "modpack_url": "https://pixeldrain.com/api/file/bDUyT7Gq/info/zip/minecraft",
   "updater_version": "2.0.3",
-  "updater_url": "https://raw.githubusercontent.com/Arcdashckr/EzeliCraft/main/modpack_updater/dist/Modpack_Guncelleyici_v2.exe",
+  "updater_url": "https://github.com/Arcdashckr/EzeliCraft/raw/refs/heads/main/modpack_updater/dist/Modpack_Guncelleyici_v2.exe",
   "changelog": [
     "• Hoofprint Global harita eklendi. M tuşu ile açabilirsiniz.",
     "• Güncelleyici yeni sürüme yükseltildi ve artık kendini güncelleyebiliyor.",
