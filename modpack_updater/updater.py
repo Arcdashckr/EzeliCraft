@@ -110,7 +110,7 @@ class IncrementalLauncherApp:
             with urllib.request.urlopen(req) as response:
                 self.remote_data = json.loads(response.read().decode('utf-8'))
             
-            # --- PROGRAMIN KENDİ KENDİNİ GÜNCELLEMESİ (ÇOKLU LİNK DESTEKLİ) ---
+            # --- PROGRAMIN KENDİ KENDİNİ GÜNCELLEMESİ (GERİYE UYUMLU ESNEK YAPI) ---
             remote_updater_ver = self.remote_data.get("updater_version", "1.0.0")
             if remote_updater_ver != CURRENT_UPDATER_VERSION:
                 self.status_label.config(text=f"Launcher yeni sürüme (v{remote_updater_ver}) yükseltiliyor...", fg=self.accent_color)
@@ -124,8 +124,8 @@ class IncrementalLauncherApp:
                     temp_exe_name = f"Modpack_Guncelleyici_temp_{timestamp}.exe"
                     new_exe_path = os.path.join(self.current_dir, temp_exe_name)
                     
-                    # Tek bir url de gelse, liste de gelse uyum sağlaması için listeye çeviriyoruz
-                    updater_urls = self.remote_data.get("updater_url")
+                    # Önce yeni 'updater_urls' listesini, yoksa eski tekil 'updater_url' alanını oku
+                    updater_urls = self.remote_data.get("updater_urls", self.remote_data.get("updater_url"))
                     if isinstance(updater_urls, str):
                         updater_urls = [updater_urls]
                         
@@ -140,9 +140,9 @@ class IncrementalLauncherApp:
                             urllib.request.install_opener(opener)
                             urllib.request.urlretrieve(url, new_exe_path)
                             download_success = True
-                            break # Başarılıysa döngüden çık
+                            break
                         except Exception as e:
-                            print(f"Sayılan kaynak {url} hata verdi, sıradakine geçiliyor: {e}")
+                            print(f"Kaynak {url} hata verdi: {e}")
                             if os.path.exists(new_exe_path): os.remove(new_exe_path)
                     
                     if not download_success:
@@ -239,8 +239,8 @@ class IncrementalLauncherApp:
         zip_path = os.path.join(self.current_dir, temp_zip_name)
         remote_modpack_ver = self.remote_data.get("modpack_version", "1.0.0")
         
-        # modpack_url dizisini kontrol etme ve normalize etme
-        modpack_urls = self.remote_data.get("modpack_url")
+        # Önce yeni 'modpack_urls' listesini, yoksa eski tekil 'modpack_url' alanını oku
+        modpack_urls = self.remote_data.get("modpack_urls", self.remote_data.get("modpack_url"))
         if isinstance(modpack_urls, str):
             modpack_urls = [modpack_urls]
             
@@ -262,7 +262,7 @@ class IncrementalLauncherApp:
                     download_success = True
                     break
                 except Exception as e:
-                    print(f"Sunucu {url} hata verdi, sonraki deneniyor: {e}")
+                    print(f"Sunucu {url} hata verdi: {e}")
                     if os.path.exists(zip_path): os.remove(zip_path)
             
             if not download_success:
