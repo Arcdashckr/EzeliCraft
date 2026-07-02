@@ -1,11 +1,12 @@
 {
   "modpack_version": "2.4.1",
   "modpack_url": "waiting for modpack_url",
-  "updater_version": "2.0.0",
+  "updater_version": "2.0.1",
   "updater_url": "https://raw.githubusercontent.com/Arcdashckr/EzeliCraft/main/modpack_updater/dist/Modpack_Guncelleyici_v2.exe",
   "changelog": [
     "• FancyMenu sürümü ve configleri yenilendi.",
     "• options.txt güncellendi (Yeni tuş atamaları eklendi, ayarlarınız sıfırlandı).",
-    "• Global harita eklendi (M tuşu ile açılıyor)."
+    "• Global harita eklendi (M tuşu ile açılıyor).",
+    "• Güncelleyici yeni sürüme yükseltildi ve artık kendini güncelleyebiliyor."
   ]
 }
