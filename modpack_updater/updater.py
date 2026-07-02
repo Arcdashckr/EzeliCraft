@@ -11,16 +11,16 @@ from threading import Thread
 
 # ⚠️ GITHUB'DAKİ version.json DOSYASININ "RAW" LİNKİ
 JSON_URL = "https://raw.githubusercontent.com/Arcdashckr/EzeliCraft/main/modpack_updater/version.json"
-CURRENT_UPDATER_VERSION = "2.0.3"  # Bu sürüm numarasını güncel tutun
+CURRENT_UPDATER_VERSION = "2.0.4"
 
 class IncrementalLauncherApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("EzeliCraft Smart Launcher v4.1")
+        self.root.title("EzeliCraft Smart Launcher v2.0.3")
         self.root.geometry("550x450")
         self.root.resizable(False, False)
         
-        # Modern Koyu Tema
+        # Modern Koyu Tema (Catppuccin Mocha)
         self.bg_color = "#1e1e2e"
         self.card_color = "#252538"
         self.accent_color = "#89b4fa"
@@ -72,41 +72,60 @@ class IncrementalLauncherApp:
 
     def check_launcher_update_and_load(self):
         try:
+            # 1. GitHub üzerindeki sürüm JSON dosyasını çekiyoruz (Tarayıcı taklidi ile)
             req = urllib.request.Request(JSON_URL, headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req) as response:
                 self.remote_data = json.loads(response.read().decode('utf-8'))
             
-            # Kendi Kendini Güncelleme (Self-Update)
+            # --- PROGRAMIN KENDİ KENDİNİ GÜNCELLEMESİ (ZAMAN DAMGALI & GÜVENLİ V3) ---
             remote_updater_ver = self.remote_data.get("updater_version", "1.0.0")
             if remote_updater_ver != CURRENT_UPDATER_VERSION:
-                self.status_label.config(text="Launcher güncelleniyor, lütfen bekleyin...", fg=self.accent_color)
-                updater_url = self.remote_data.get("updater_url")
-                current_exe = sys.argv[0]
-                new_exe = current_exe.replace(".exe", "_yeni.exe")
-                if not new_exe.endswith("_yeni.exe"): new_exe = "Modpack_Guncelleyici_yeni.exe"
+                self.status_label.config(text="Launcher yeni sürüme yükseltiliyor, lütfen bekleyin...", fg=self.accent_color)
+                self.root.update_idletasks()
                 
-                try:
-                    self.status_label.config(text="Sunucuya bağlanılıyor...")
-                    if os.path.exists(zip_path): os.remove(zip_path)
-
-                    # MediaFire'ı kandırmak için tarayıcı başlıkları (User-Agent) ekliyoruz
+                current_exe = sys.executable
+                
+                # Eğer .py formatında çalışıyorsa güncellemeyi atla (geliştirici modu)
+                if current_exe.endswith(".exe"):
+                    import time
+                    # Kullanıcı kazara eski bir '_yeni.exe' açsa bile indirme çakışmasını önlemek için benzersiz isim
+                    timestamp = int(time.time())
+                    temp_exe_name = f"Modpack_Guncelleyici_temp_{timestamp}.exe"
+                    new_exe_path = os.path.join(self.current_dir, temp_exe_name)
+                    
+                    updater_url = self.remote_data.get("updater_url")
+                    
+                    # Yeni .exe'yi benzersiz geçici ismiyle indir
                     opener = urllib.request.build_opener()
-                    opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')]
+                    opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
                     urllib.request.install_opener(opener)
-
-                    # İndirmeyi başlat
-                    urllib.request.urlretrieve(modpack_url, zip_path, reporthook=self.download_progress)
-                except Exception as e:
-                    self.status_label.config(text=f"Güncelleme indirilemedi: {str(e)}", fg=self.error_color)
-                    messagebox.showerror("Hata", f"Güncelleme indirilemedi:\n{str(e)}")
+                    urllib.request.urlretrieve(updater_url, new_exe_path)
+                    
+                    pid = os.getpid()
+                    current_exe_name = os.path.basename(current_exe) # Açık olan dosyanın adı ne olursa olsun yakalar
+                    final_exe_name = os.path.join(self.current_dir, "Modpack_Guncelleyici_v2.exe")
+                    
+                    # Güçlendirilmiş Görünmez PowerShell Betiği:
+                    # 1. PID üzerinden mevcut programın tamamen kapanmasını bekler.
+                    # 2. Şu an çalışan eski veya hatalı açılmış dosyayı diskten siler.
+                    # 3. Klasörde önceden kalma bir Modpack_Guncelleyici_v2.exe varsa onu temizler.
+                    # 4. Yeni indirilen benzersiz temp dosyasını "Modpack_Guncelleyici_v2.exe" yapar ve başlatır.
+                    ps_script = f"""
+                    Start-Sleep -Seconds 1
+                    $proc = Get-Process -Id {pid} -ErrorAction SilentlyContinue
+                    if ($proc) {{ $proc | Wait-Process -Timeout 5 }}
+                    if (Test-Path "{current_exe}") {{ Remove-Item "{current_exe}" -Force }}
+                    if (Test-Path "{final_exe_name}") {{ Remove-Item "{final_exe_name}" -Force }}
+                    Rename-Item "{new_exe_path}" "Modpack_Guncelleyici_v2.exe" -Force
+                    Start-Process "{final_exe_name}"
+                    """
+                    
+                    subprocess.Popen(["powershell", "-Command", ps_script], creationflags=subprocess.CREATE_NO_WINDOW)
+                    self.root.destroy()
+                    sys.exit(0)
                     return
-                
-                batch_cmd = f'timeout /t 1 && del "{current_exe}" && move "{new_exe}" "{current_exe}" && start "" "{current_exe}" && del "%~f0"'
-                subprocess.Popen(f'cmd.exe /c {batch_cmd}', shell=True)
-                self.root.quit()
-                return
 
-            # Sürüm Karşılaştırma
+            # --- NORMAL MODPACK SÜRÜM KONTROLÜ ---
             local_version_path = os.path.join(self.current_dir, "local_version.json")
             local_ver = "0.0.0"
             if os.path.exists(local_version_path):
@@ -117,6 +136,7 @@ class IncrementalLauncherApp:
                 
             remote_modpack_ver = self.remote_data.get("modpack_version", "1.0.0")
             
+            # Değişiklik notlarını listeleme
             self.changelog_box.config(state="normal")
             self.changelog_box.delete("1.0", tk.END)
             for line in self.remote_data.get("changelog", ["• Değişiklik notu yok."]):
@@ -146,15 +166,49 @@ class IncrementalLauncherApp:
             self.status_label.config(text=f"Değişiklik paketi indiriliyor: %{percent}", fg=self.text_color)
             self.root.update_idletasks()
 
+    def update_options_txt(self):
+        options_path = os.path.join(self.current_dir, "minecraft", "options.txt")
+        options_updates = self.remote_data.get("options_updates", {})
+        
+        if not options_updates or not os.path.exists(options_path):
+            return
+            
+        try:
+            self.status_label.config(text="options.txt ayarları optimize ediliyor...")
+            self.root.update_idletasks()
+            
+            current_settings = {}
+            with open(options_path, 'r', encoding='utf-8', errors='ignore') as f:
+                for line in f:
+                    if ":" in line:
+                        key, val = line.strip().split(":", 1)
+                        current_settings[key] = val
+            
+            for key, val in options_updates.items():
+                current_settings[key] = val
+                
+            with open(options_path, 'w', encoding='utf-8') as f:
+                for key, val in current_settings.items():
+                    f.write(f"{key}:{val}\n")
+                    
+        except Exception as e:
+            print(f"options.txt güncellenirken hata: {e}")
+
     def perform_incremental_update(self):
         temp_zip_name = "temp_patch.zip"
         zip_path = os.path.join(self.current_dir, temp_zip_name)
-        modpack_url = self.remote_data.get("remote_url" if "remote_url" in self.remote_data else "modpack_url")
+        modpack_url = self.remote_data.get("modpack_url")
         remote_modpack_ver = self.remote_data.get("modpack_version", "1.0.0")
         
         try:
             self.status_label.config(text="Sunucuya bağlanılıyor...")
             if os.path.exists(zip_path): os.remove(zip_path)
+            
+            # Hosting/Mediafire sorunları için User-Agent başlığı ekleyerek tarayıcı taklidi yapıyoruz
+            opener = urllib.request.build_opener()
+            opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')]
+            urllib.request.install_opener(opener)
+            
             urllib.request.urlretrieve(modpack_url, zip_path, reporthook=self.download_progress)
             
             self.status_label.config(text="Akıllı dosya entegrasyonu yapılıyor...")
@@ -169,14 +223,11 @@ class IncrementalLauncherApp:
                 
                 for i, file in enumerate(file_list):
                     parts = file.split('/')
-                    # Yapı artık 'minecraft' klasörü ile başlıyor
                     if len(parts) > 1 and parts[0] == "minecraft":
                         folder_lower = parts[1].lower()
-                        # Eğer korunan bir klasörse ayıklama, pas geç
                         if folder_lower in protected_folders or folder_lower.startswith('xaerowaypoints'):
                             continue
                     
-                    # Dosyayı hedef klasöre çıkart
                     zip_ref.extract(file, self.current_dir)
                     
                     if i % max(1, (total_files // 10)) == 0:
@@ -187,14 +238,16 @@ class IncrementalLauncherApp:
 
             if os.path.exists(zip_path): os.remove(zip_path)
 
-            # Eski ve kaldırılan dosyaları temizleme aşaması
+            # --- AKILLI OPTIONS.TXT GÜNCELLEMESİ ---
+            self.update_options_txt()
+
+            # --- ESKİ DOSYALARI SİLME AŞAMASI ---
             self.status_label.config(text="Eski ve kaldırılan dosyalar temizleniyor...")
             self.progress['value'] = 95
             self.root.update_idletasks()
             
             deleted_files = self.remote_data.get("deleted_files", [])
             for rel_path in deleted_files:
-                # Eğer silinecek dosya eski koddan dolayı .minecraft/ ile kalmışsa otomatik minecraft/ yap
                 fixed_path = rel_path
                 if fixed_path.startswith(".minecraft/"):
                     fixed_path = fixed_path.replace(".minecraft/", "minecraft/", 1)
@@ -205,9 +258,7 @@ class IncrementalLauncherApp:
                 elif os.path.isdir(full_del_path):
                     shutil.rmtree(full_del_path)
 
-            self.update_options_txt()
-
-            # Sürümü yerel dosyaya yaz
+            # Sürüm bilgisini yerel dosyaya kaydediyoruz
             local_version_path = os.path.join(self.current_dir, "local_version.json")
             with open(local_version_path, 'w') as f:
                 json.dump({"version": remote_modpack_ver}, f)
@@ -224,37 +275,6 @@ class IncrementalLauncherApp:
                 try: os.remove(zip_path)
                 except: pass
             self.btn_update.config(state="normal")
-            
-    def update_options_txt(self):
-        options_path = os.path.join(self.current_dir, "minecraft", "options.txt")
-        options_updates = self.remote_data.get("options_updates", {})
-        
-        if not options_updates or not os.path.exists(options_path):
-            return  # Güncellenecek tuş yoksa veya options.txt bulunamadıysa geç
-            
-        try:
-            self.status_label.config(text="options.txt tuş atamaları optimize ediliyor...")
-            self.root.update_idletasks()
-            
-            # 1. Mevcut ayarları oku
-            current_settings = {}
-            with open(options_path, 'r', encoding='utf-8', errors='ignore') as f:
-                for line in f:
-                    if ":" in line:
-                        key, val = line.strip().split(":", 1)
-                        current_settings[key] = val
-            
-            # 2. Sadece JSON'dan gelenleri ekle veya değiştir
-            for key, val in options_updates.items():
-                current_settings[key] = val
-                
-            # 3. Geriye options.txt olarak kaydet
-            with open(options_path, 'w', encoding='utf-8') as f:
-                for key, val in current_settings.items():
-                    f.write(f"{key}:{val}\n")
-                    
-        except Exception as e:
-            print(f"options.txt güncellenirken hata: {e}")
 
 if __name__ == "__main__":
     root = tk.Tk()
