@@ -11,7 +11,7 @@ from threading import Thread
 
 # ⚠️ GITHUB'DAKİ version.json DOSYASININ "RAW" LİNKİ
 JSON_URL = "https://raw.githubusercontent.com/Arcdashckr/EzeliCraft/main/modpack_updater/version.json"
-CURRENT_UPDATER_VERSION = "2.0.9"
+CURRENT_UPDATER_VERSION = "2.1.0"
 
 class IncrementalLauncherApp:
     def __init__(self, root):
@@ -110,7 +110,7 @@ class IncrementalLauncherApp:
             with urllib.request.urlopen(req) as response:
                 self.remote_data = json.loads(response.read().decode('utf-8'))
             
-            # --- PROGRAMIN KENDİ KENDİNİ GÜNCELLEMESİ (GERİYE UYUMLU ESNEK YAPI) ---
+            # --- PROGRAMIN KENDİ KENDİNİ GÜNCELLEMESİ (AKILLI DOĞRULAMA) ---
             remote_updater_ver = self.remote_data.get("updater_version", "1.0.0")
             if remote_updater_ver != CURRENT_UPDATER_VERSION:
                 self.status_label.config(text=f"Launcher yeni sürüme (v{remote_updater_ver}) yükseltiliyor...", fg=self.accent_color)
@@ -124,7 +124,6 @@ class IncrementalLauncherApp:
                     temp_exe_name = f"Modpack_Guncelleyici_temp_{timestamp}.exe"
                     new_exe_path = os.path.join(self.current_dir, temp_exe_name)
                     
-                    # Önce yeni 'updater_urls' listesini, yoksa eski tekil 'updater_url' alanını oku
                     updater_urls = self.remote_data.get("updater_urls", self.remote_data.get("updater_url"))
                     if isinstance(updater_urls, str):
                         updater_urls = [updater_urls]
@@ -139,6 +138,7 @@ class IncrementalLauncherApp:
                             opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
                             urllib.request.install_opener(opener)
                             urllib.request.urlretrieve(url, new_exe_path)
+                            
                             download_success = True
                             break
                         except Exception as e:
@@ -146,7 +146,7 @@ class IncrementalLauncherApp:
                             if os.path.exists(new_exe_path): os.remove(new_exe_path)
                     
                     if not download_success:
-                        raise Exception("Güncelleyici dosyası hiçbir indirme sunucusundan çekilemedi!")
+                        raise Exception("Güncelleyici dosyası hiçbir indirme sunucusundan çekilemedi! Lütfen bir yetkiliye bildirin.")
                     
                     pid = os.getpid()
                     final_exe_name = os.path.join(self.current_dir, "Modpack_Guncelleyici_v2.exe")
@@ -239,7 +239,6 @@ class IncrementalLauncherApp:
         zip_path = os.path.join(self.current_dir, temp_zip_name)
         remote_modpack_ver = self.remote_data.get("modpack_version", "1.0.0")
         
-        # Önce yeni 'modpack_urls' listesini, yoksa eski tekil 'modpack_url' alanını oku
         modpack_urls = self.remote_data.get("modpack_urls", self.remote_data.get("modpack_url"))
         if isinstance(modpack_urls, str):
             modpack_urls = [modpack_urls]
@@ -259,14 +258,22 @@ class IncrementalLauncherApp:
                     urllib.request.install_opener(opener)
                     
                     urllib.request.urlretrieve(url, zip_path, reporthook=self.download_progress)
-                    download_success = True
-                    break
+                    
+                    # 🔍 [KRİTİK DOĞRULAMA] İndirilen dosya geçerli bir ZIP mi kontrol et
+                    if zipfile.is_zipfile(zip_path):
+                        download_success = True
+                        break # Geçerli bir zip ise döngüyü kır ve devam et
+                    else:
+                        print(f"Sunucu {url} dosya indirdi fakat dosya geçerli bir ZIP değil (Bozuk/Hatalı)!")
+                        if os.path.exists(zip_path): os.remove(zip_path)
+                        
                 except Exception as e:
-                    print(f"Sunucu {url} hata verdi: {e}")
+                    print(f"Sunucu {url} bağlantı hatası verdi: {e}")
                     if os.path.exists(zip_path): os.remove(zip_path)
             
+            # Eğer tüm döngü bittiği halde geçerli bir dosya inmediyse tetiklenecek hata mesajı
             if not download_success:
-                raise Exception("Mod paketi listelenen hiçbir indirme sunucusundan çekilemedi!")
+                raise Exception("Mod paketi hiçbir indirme sunucusundan çekilemedi veya indirilen dosyalar bozuk! Lütfen durumu bir yetkiliye bildirin.")
             
             self.status_label.config(text="Akıllı dosya entegrasyonu yapılıyor...")
             self.progress['value'] = 60
