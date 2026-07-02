@@ -1,9 +1,10 @@
 {
   "modpack_version": "2.4.2",
   "modpack_url": "https://pixeldrain.com/api/file/bDUyT7Gq/info/zip/minecraft",
-  "updater_version": "2.0.4",
+  "updater_version": "2.0.6",
   "updater_url": "https://github.com/Arcdashckr/EzeliCraft/raw/refs/heads/main/modpack_updater/dist/Modpack_Guncelleyici_v2.exe",
   "changelog": [
+    "DAHA FAZLA NOT İÇİN AŞAĞI KAYDIRIN ↓↓↓",
     "• Hoofprint Global harita eklendi. M tuşu ile açabilirsiniz.",
     "• Güncelleyici yeni sürüme yükseltildi ve artık kendini güncelleyebiliyor.",
     "• Distraction Free Recipes modu kaldırıldı.",
@@ -16,7 +17,7 @@
     "• Artık Ş tuşu ile sesli sohbeti sağırlaştırabilirsiniz.",
     "• Artık H tuşu ile JEI arama çubuğuna odaklanabilirsiniz.",
     "• Artık , (virgül) tuşu ile Isometric Renders modunda alan seçimi yapabilirsiniz.",
-    " İzometrik render için alan seçtikten sonra /isorender area komutunu kullanın."
+    "• İzometrik render için alan seçtikten sonra /isorender area komutunu kullanın."
   ],
   "deleted_files": [
     "minecraft/mods/distraction_free_recipes-fabric-1.2.1-1.21.1.jar",

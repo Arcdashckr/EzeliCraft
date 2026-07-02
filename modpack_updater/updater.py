@@ -11,12 +11,12 @@ from threading import Thread
 
 # ⚠️ GITHUB'DAKİ version.json DOSYASININ "RAW" LİNKİ
 JSON_URL = "https://raw.githubusercontent.com/Arcdashckr/EzeliCraft/main/modpack_updater/version.json"
-CURRENT_UPDATER_VERSION = "2.0.4"
+CURRENT_UPDATER_VERSION = "2.0.6"
 
 class IncrementalLauncherApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("EzeliCraft Smart Launcher v2.0.3")
+        self.root.title("EzeliCraft Smart Launcher v2.0.6")
         self.root.geometry("550x450")
         self.root.resizable(False, False)
         
@@ -77,7 +77,7 @@ class IncrementalLauncherApp:
             with urllib.request.urlopen(req) as response:
                 self.remote_data = json.loads(response.read().decode('utf-8'))
             
-            # --- PROGRAMIN KENDİ KENDİNİ GÜNCELLEMESİ (ZAMAN DAMGALI & GÜVENLİ V3) ---
+            # --- PROGRAMIN KENDİ KENDİNİ GÜNCELLEMESİ (ZAMAN DAMGALI & ESKİLERİ TEMİZLEYEN V4) ---
             remote_updater_ver = self.remote_data.get("updater_version", "1.0.0")
             if remote_updater_ver != CURRENT_UPDATER_VERSION:
                 self.status_label.config(text="Launcher yeni sürüme yükseltiliyor, lütfen bekleyin...", fg=self.accent_color)
@@ -102,13 +102,16 @@ class IncrementalLauncherApp:
                     urllib.request.urlretrieve(updater_url, new_exe_path)
                     
                     pid = os.getpid()
-                    current_exe_name = os.path.basename(current_exe) # Açık olan dosyanın adı ne olursa olsun yakalar
                     final_exe_name = os.path.join(self.current_dir, "Modpack_Guncelleyici_v2.exe")
+                    
+                    # Eski manuel ve otomatik güncelleyicilerin yolları
+                    old_manuel = os.path.join(self.current_dir, "Modpack_Guncelleyici_MANUEL.exe")
+                    old_otomatik = os.path.join(self.current_dir, "Modpack_Guncelleyici_OTOMATİK.exe")
                     
                     # Güçlendirilmiş Görünmez PowerShell Betiği:
                     # 1. PID üzerinden mevcut programın tamamen kapanmasını bekler.
-                    # 2. Şu an çalışan eski veya hatalı açılmış dosyayı diskten siler.
-                    # 3. Klasörde önceden kalma bir Modpack_Guncelleyici_v2.exe varsa onu temizler.
+                    # 2. Şu an çalışan dosyayı diskten siler.
+                    # 3. Klasörde önceden kalma v2, MANUEL veya OTOMATİK güncelleyiciler varsa hepsini temizler.
                     # 4. Yeni indirilen benzersiz temp dosyasını "Modpack_Guncelleyici_v2.exe" yapar ve başlatır.
                     ps_script = f"""
                     Start-Sleep -Seconds 1
@@ -116,6 +119,8 @@ class IncrementalLauncherApp:
                     if ($proc) {{ $proc | Wait-Process -Timeout 5 }}
                     if (Test-Path "{current_exe}") {{ Remove-Item "{current_exe}" -Force }}
                     if (Test-Path "{final_exe_name}") {{ Remove-Item "{final_exe_name}" -Force }}
+                    if (Test-Path "{old_manuel}") {{ Remove-Item "{old_manuel}" -Force }}
+                    if (Test-Path "{old_otomatik}") {{ Remove-Item "{old_otomatik}" -Force }}
                     Rename-Item "{new_exe_path}" "Modpack_Guncelleyici_v2.exe" -Force
                     Start-Process "{final_exe_name}"
                     """
@@ -193,88 +198,6 @@ class IncrementalLauncherApp:
                     
         except Exception as e:
             print(f"options.txt güncellenirken hata: {e}")
-
-    def perform_incremental_update(self):
-        temp_zip_name = "temp_patch.zip"
-        zip_path = os.path.join(self.current_dir, temp_zip_name)
-        modpack_url = self.remote_data.get("modpack_url")
-        remote_modpack_ver = self.remote_data.get("modpack_version", "1.0.0")
-        
-        try:
-            self.status_label.config(text="Sunucuya bağlanılıyor...")
-            if os.path.exists(zip_path): os.remove(zip_path)
-            
-            # Hosting/Mediafire sorunları için User-Agent başlığı ekleyerek tarayıcı taklidi yapıyoruz
-            opener = urllib.request.build_opener()
-            opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')]
-            urllib.request.install_opener(opener)
-            
-            urllib.request.urlretrieve(modpack_url, zip_path, reporthook=self.download_progress)
-            
-            self.status_label.config(text="Akıllı dosya entegrasyonu yapılıyor...")
-            self.progress['value'] = 60
-            self.root.update_idletasks()
-            
-            protected_folders = ['saves', 'screenshots', 'schematics', 'xaero']
-            
-            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                file_list = zip_ref.namelist()
-                total_files = len(file_list)
-                
-                for i, file in enumerate(file_list):
-                    parts = file.split('/')
-                    if len(parts) > 1 and parts[0] == "minecraft":
-                        folder_lower = parts[1].lower()
-                        if folder_lower in protected_folders or folder_lower.startswith('xaerowaypoints'):
-                            continue
-                    
-                    zip_ref.extract(file, self.current_dir)
-                    
-                    if i % max(1, (total_files // 10)) == 0:
-                        percent_extract = int((i / total_files) * 30)
-                        self.progress['value'] = 60 + percent_extract
-                        self.status_label.config(text=f"Dosyalar güncelleniyor: %{int((i / total_files) * 100)}")
-                        self.root.update_idletasks()
-
-            if os.path.exists(zip_path): os.remove(zip_path)
-
-            # --- AKILLI OPTIONS.TXT GÜNCELLEMESİ ---
-            self.update_options_txt()
-
-            # --- ESKİ DOSYALARI SİLME AŞAMASI ---
-            self.status_label.config(text="Eski ve kaldırılan dosyalar temizleniyor...")
-            self.progress['value'] = 95
-            self.root.update_idletasks()
-            
-            deleted_files = self.remote_data.get("deleted_files", [])
-            for rel_path in deleted_files:
-                fixed_path = rel_path
-                if fixed_path.startswith(".minecraft/"):
-                    fixed_path = fixed_path.replace(".minecraft/", "minecraft/", 1)
-                    
-                full_del_path = os.path.join(self.current_dir, fixed_path.replace('/', os.sep))
-                if os.path.isfile(full_del_path):
-                    os.remove(full_del_path)
-                elif os.path.isdir(full_del_path):
-                    shutil.rmtree(full_del_path)
-
-            # Sürüm bilgisini yerel dosyaya kaydediyoruz
-            local_version_path = os.path.join(self.current_dir, "local_version.json")
-            with open(local_version_path, 'w') as f:
-                json.dump({"version": remote_modpack_ver}, f)
-
-            self.progress['value'] = 100
-            self.status_label.config(text=f"Güncelleme Tamamlandı! Mevcut Sürüm: v{remote_modpack_ver}", fg=self.success_color)
-            self.btn_update.config(text="Sürüm Güncel", bg="#a6e3a1", state="disabled")
-            messagebox.showinfo("Başarılı", f"Mod paketiniz v{remote_modpack_ver} sürümüne başarıyla güncellendi!")
-            
-        except Exception as e:
-            self.status_label.config(text=f"Hata oluştu:\n{str(e)}", fg=self.error_color)
-            messagebox.showerror("Hata", f"İşlem başarısız:\n{str(e)}")
-            if os.path.exists(zip_path):
-                try: os.remove(zip_path)
-                except: pass
-            self.btn_update.config(state="normal")
 
 if __name__ == "__main__":
     root = tk.Tk()
