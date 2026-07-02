@@ -11,7 +11,7 @@ from threading import Thread
 
 # ⚠️ GITHUB'DAKİ version.json DOSYASININ "RAW" LİNKİ
 JSON_URL = "https://raw.githubusercontent.com/Arcdashckr/EzeliCraft/main/modpack_updater/version.json"
-CURRENT_UPDATER_VERSION = "2.0.8"
+CURRENT_UPDATER_VERSION = "2.0.9"
 
 class IncrementalLauncherApp:
     def __init__(self, root):
@@ -74,22 +74,19 @@ class IncrementalLauncherApp:
         self.btn_update.pack(pady=10)
 
     def sanitize_folder_on_startup(self):
-        """Açılışta eski dosyaları siler, eğer geçici/hatalı exe açıldıysa kendini v2 yapıp yeniden başlatır."""
         current_exe = sys.executable
         if not current_exe.endswith(".exe"):
-            return True # Geliştirici modundaysa pas geç
+            return True
             
         current_exe_name = os.path.basename(current_exe)
         final_exe_path = os.path.join(self.current_dir, "Modpack_Guncelleyici_v2.exe")
         
-        # 1. Klasördeki artık eski sürümleri temizle
         for old_name in ["Modpack_Guncelleyici_MANUEL.exe", "Modpack_Guncelleyici_OTOMATİK.exe"]:
             old_path = os.path.join(self.current_dir, old_name)
             if os.path.exists(old_path) and current_exe_name != old_name:
                 try: os.remove(old_path)
                 except: pass
 
-        # 2. Eğer şu anki çalışan dosya _yeni veya _temp uzantılı bir dosya ise adını düzelt
         if "_yeni.exe" in current_exe_name.lower() or "_temp_" in current_exe_name.lower():
             pid = os.getpid()
             ps_script = f"""
@@ -113,10 +110,9 @@ class IncrementalLauncherApp:
             with urllib.request.urlopen(req) as response:
                 self.remote_data = json.loads(response.read().decode('utf-8'))
             
-            # --- PROGRAMIN KENDİ KENDİNİ GÜNCELLEMESİ (SÜRÜM BİLGİSİ YAZAN GÜVENLİ MODEL) ---
+            # --- PROGRAMIN KENDİ KENDİNİ GÜNCELLEMESİ (ÇOKLU LİNK DESTEKLİ) ---
             remote_updater_ver = self.remote_data.get("updater_version", "1.0.0")
             if remote_updater_ver != CURRENT_UPDATER_VERSION:
-                # Ekrana yeni bulunan hedef sürümü yazdırıyoruz
                 self.status_label.config(text=f"Launcher yeni sürüme (v{remote_updater_ver}) yükseltiliyor...", fg=self.accent_color)
                 self.root.update_idletasks()
                 
@@ -128,12 +124,29 @@ class IncrementalLauncherApp:
                     temp_exe_name = f"Modpack_Guncelleyici_temp_{timestamp}.exe"
                     new_exe_path = os.path.join(self.current_dir, temp_exe_name)
                     
-                    updater_url = self.remote_data.get("updater_url")
+                    # Tek bir url de gelse, liste de gelse uyum sağlaması için listeye çeviriyoruz
+                    updater_urls = self.remote_data.get("updater_url")
+                    if isinstance(updater_urls, str):
+                        updater_urls = [updater_urls]
+                        
+                    download_success = False
+                    for idx, url in enumerate(updater_urls):
+                        try:
+                            self.status_label.config(text=f"Launcher indiriliyor (Sunucu {idx+1}/{len(updater_urls)})...")
+                            self.root.update_idletasks()
+                            
+                            opener = urllib.request.build_opener()
+                            opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
+                            urllib.request.install_opener(opener)
+                            urllib.request.urlretrieve(url, new_exe_path)
+                            download_success = True
+                            break # Başarılıysa döngüden çık
+                        except Exception as e:
+                            print(f"Sayılan kaynak {url} hata verdi, sıradakine geçiliyor: {e}")
+                            if os.path.exists(new_exe_path): os.remove(new_exe_path)
                     
-                    opener = urllib.request.build_opener()
-                    opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
-                    urllib.request.install_opener(opener)
-                    urllib.request.urlretrieve(updater_url, new_exe_path)
+                    if not download_success:
+                        raise Exception("Güncelleyici dosyası hiçbir indirme sunucusundan çekilemedi!")
                     
                     pid = os.getpid()
                     final_exe_name = os.path.join(self.current_dir, "Modpack_Guncelleyici_v2.exe")
@@ -190,7 +203,7 @@ class IncrementalLauncherApp:
             percent = int((downloaded / total_size) * 100)
             percent = min(100, percent)
             self.progress['value'] = percent * 0.5
-            self.status_label.config(text=f"Değişiklik paketi indiriliyor: %{percent}", fg=self.text_color)
+            self.status_label.config(text=f"Değişiklik paketi indiriliyor: %{percent} (Sunucu: {self.current_server_info})", fg=self.text_color)
             self.root.update_idletasks()
 
     def update_options_txt(self):
@@ -224,18 +237,36 @@ class IncrementalLauncherApp:
     def perform_incremental_update(self):
         temp_zip_name = "temp_patch.zip"
         zip_path = os.path.join(self.current_dir, temp_zip_name)
-        modpack_url = self.remote_data.get("modpack_url")
         remote_modpack_ver = self.remote_data.get("modpack_version", "1.0.0")
         
+        # modpack_url dizisini kontrol etme ve normalize etme
+        modpack_urls = self.remote_data.get("modpack_url")
+        if isinstance(modpack_urls, str):
+            modpack_urls = [modpack_urls]
+            
         try:
-            self.status_label.config(text="Sunucuya bağlanılıyor...")
-            if os.path.exists(zip_path): os.remove(zip_path)
+            download_success = False
+            for idx, url in enumerate(modpack_urls):
+                try:
+                    self.status_label.config(text=f"Sunucuya bağlanılıyor (Sunucu {idx+1}/{len(modpack_urls)})...")
+                    self.current_server_info = f"{idx+1}/{len(modpack_urls)}"
+                    self.root.update_idletasks()
+                    
+                    if os.path.exists(zip_path): os.remove(zip_path)
+                    
+                    opener = urllib.request.build_opener()
+                    opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')]
+                    urllib.request.install_opener(opener)
+                    
+                    urllib.request.urlretrieve(url, zip_path, reporthook=self.download_progress)
+                    download_success = True
+                    break
+                except Exception as e:
+                    print(f"Sunucu {url} hata verdi, sonraki deneniyor: {e}")
+                    if os.path.exists(zip_path): os.remove(zip_path)
             
-            opener = urllib.request.build_opener()
-            opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')]
-            urllib.request.install_opener(opener)
-            
-            urllib.request.urlretrieve(modpack_url, zip_path, reporthook=self.download_progress)
+            if not download_success:
+                raise Exception("Mod paketi listelenen hiçbir indirme sunucusundan çekilemedi!")
             
             self.status_label.config(text="Akıllı dosya entegrasyonu yapılıyor...")
             self.progress['value'] = 60

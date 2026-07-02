@@ -1,8 +1,14 @@
 {
+  "updater_version": "2.0.9",
   "modpack_version": "2.4.2",
-  "modpack_url": "https://pixeldrain.com/api/file/bDUyT7Gq?download",
-  "updater_version": "2.0.8",
-  "updater_url": "https://github.com/Arcdashckr/EzeliCraft/raw/refs/heads/main/modpack_updater/dist/Modpack_Guncelleyici_v2.exe",
+  "updater_url": [
+    "https://github.com/Arcdashckr/EzeliCraft/raw/refs/heads/main/modpack_updater/dist/Modpack_Guncelleyici_v2.exe"
+  ],
+  "modpack_url": [
+    "https://store-eu-par-3.gofile.io/download/web/abac6c45-9b4b-4532-95f1-980d3c89556e/EzeliCraft_Modpack_G%C3%BCncelleme_v2.4.2.zip",
+    "https://pixeldrain.com/api/file/bDUyT7Gq?download",
+    "https://download1476.mediafire.com/yp5ap6o30eugmNYQkeuJvN83F64NUjt_iEiMOwTd3ljefDqHpZf6NZ5NOPrWhPEIV1FL02n1lLTLaJ2Yv9n0BXv7gHK7qOFhR8cOYN6cgW8Qx8TR3MgZV7_XX3ze11MtBl6YrDcoZ1CseqJ65qyiYQ-1Mq0syTRqg6hcUQ4edtI/i7nqemzasgx1amf/EzeliCraft_Modpack_G%C3%BCncelleme_v2.4.2.zip"
+  ],
   "changelog": [
     "DAHA FAZLA NOT İÇİN AŞAĞI KAYDIRIN ↓↓↓",
     "• Hoofprint Global harita eklendi. M tuşu ile açabilirsiniz.",
