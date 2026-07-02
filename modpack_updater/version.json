@@ -10,6 +10,9 @@
     "• Güncelleyici yeni sürüme yükseltildi ve artık kendini güncelleyebiliyor."
   ],
   "deleted_files": [
-    "minecraft/mods/distraction_free_recipes-fabric-1.2.1-1.21.1.jar"
+    "minecraft/mods/distraction_free_recipes-fabric-1.2.1-1.21.1.jar",
+    "minecraft/mods/fancymenu_fabric_3.2.5_MC_1.21.jar",
+    "minecraft/mods/drippyloadingscreen_fabric_3.0.7_MC_1.21.jar",
+    "minecraft/mods/BetterAdvancements-Fabric-1.21.1-0.4.3.21.jar"
   ]
 }
