@@ -2,17 +2,17 @@
   "updater_version": "2.1.0",
   "modpack_version": "2.4.2",
   "updater_url": "https://github.com/Arcdashckr/EzeliCraft/raw/refs/heads/main/modpack_updater/dist/Modpack_Guncelleyici_v2.exe",
-  "modpack_url": "https://store-eu-par-3.gofile.io/download/web/abac6c45-9b4b-4532-95f1-980d3c89556e/EzeliCraft_Modpack_G%C3%BCncelleme_v2.4.2.zip",
+  "modpack_url": "https://store5.gofile.io/download/web/94a7ccbb-0b22-4303-a6c2-271249db7e42/EzeliCraft_Modpack_G%C3%BCncelleme_v2.4.2.zip",
   "updater_urls": [
     "https://github.com/Arcdashckr/EzeliCraft/raw/refs/heads/main/modpack_updater/dist/Modpack_Guncelleyici_v2.exe"
   ],
   "modpack_urls": [
-    "https://store-eu-par-3.gofile.io/download/web/abac6c45-9b4b-4532-95f1-980d3c89556e/EzeliCraft_Modpack_G%C3%BCncelleme_v2.4.2.zip",
-    "https://pixeldrain.com/api/file/WQdQaZzR?download",
-    "https://download1476.mediafire.com/yp5ap6o30eugmNYQkeuJvN83F64NUjt_iEiMOwTd3ljefDqHpZf6NZ5NOPrWhPEIV1FL02n1lLTLaJ2Yv9n0BXv7gHK7qOFhR8cOYN6cgW8Qx8TR3MgZV7_XX3ze11MtBl6YrDcoZ1CseqJ65qyiYQ-1Mq0syTRqg6hcUQ4edtI/i7nqemzasgx1amf/EzeliCraft_Modpack_G%C3%BCncelleme_v2.4.2.zip"
+    "https://store5.gofile.io/download/web/94a7ccbb-0b22-4303-a6c2-271249db7e42/EzeliCraft_Modpack_G%C3%BCncelleme_v2.4.2.zip",
+    "https://pixeldrain.com/api/file/M8rpyABk?download",
+    "https://download1580.mediafire.com/s1am55y3msvgDJ5Ta1inl_OknwNVag32cJSejinSL95MCWSssWEkkotAAQNr2LlrkR-BM8Q6vxTv09NYn0ds28XYk-jRXz3e867gfT5Dhy7eWMT1gbEw420MxlY9qtDDc_FtWw4LvovmWj64JhjlL0rVtFBCOHXMElAwid-syfM/mdgybi97b4qcqf0/EzeliCraft_Modpack_G%C3%BCncelleme_v2.4.2.zip"
   ],
   "changelog": [
-    "DAHA FAZLA NOT İÇİN AŞAĞI KAYDIRIN ↓↓↓",
+    "↓↓↓ DAHA FAZLA NOT İÇİN AŞAĞI KAYDIRIN ↓↓↓",
     "• Hoofprint Global harita eklendi. M tuşu ile açabilirsiniz.",
     "• Güncelleyici yeni sürüme yükseltildi ve artık kendini güncelleyebiliyor.",
     "• Distraction Free Recipes modu kaldırıldı.",
@@ -24,24 +24,33 @@
     "• Artık Ç tuşu ile mikrofonu muteleyebilirsiniz.",
     "• Artık Ş tuşu ile sesli sohbeti sağırlaştırabilirsiniz.",
     "• Artık H tuşu ile JEI arama çubuğuna odaklanabilirsiniz.",
+    "• Artık Mouse5 tuşu ile dairesel hotbar menüsünü açabilirsiniz.",
     "• Artık , (virgül) tuşu ile Isometric Renders modunda alan seçimi yapabilirsiniz.",
     "• İzometrik render için alan seçtikten sonra /isorender area komutunu kullanın."
   ],
   "deleted_files": [
+    "minecraft/mods/Modpack_Guncelleyici_v2.exe",
     "minecraft/mods/distraction_free_recipes-fabric-1.2.1-1.21.1.jar",
     "minecraft/mods/fancymenu_fabric_3.2.5_MC_1.21.jar",
     "minecraft/mods/drippyloadingscreen_fabric_3.0.7_MC_1.21.jar",
-    "minecraft/mods/BetterAdvancements-Fabric-1.21.1-0.4.3.21.jar"
+    "minecraft/mods/BetterAdvancements-Fabric-1.21.1-0.4.3.21.jar",
+    "minecraft/mods/carryon-fabric-1.21.1-2.2.4.4.jar",
+    "minecraft/mods/Photography-1.0.4+mc1.21.1.jar",
+    "minecraft/mods/JustEnoughResources-Fabric-1.21.1-1.6.0.17.jar",
+    "minecraft/mods/villagerinabucket-fabric-1.21.1-1.1.1.jar",
+    "minecraft/mods/vcinteraction-fabric-1.21.1-1.0.8.jar"
   ],
   "options_updates": {
     "key_key.advancements":  "key.keyboard.l",
     "key_key.disable_voice_chat":  "key.keyboard.period",
     "key_key.hoofprint.open":  "key.keyboard.m",
-    "key_key.immersiveminimaps.cave_mode":  "key.keyboard.backspace",
-    "key_key.immersiveminimaps.zoom_in":  "key.keyboard.equal",
-    "key_key.immersiveminimaps.zoom_out":  "key.keyboard.minus",
+    "key_key.immersiveminimaps.cave_mode":  "key.keyboard.home",
+    "key_key.immersiveminimaps.zoom_in":  "key.keyboard.page.down",
+    "key_key.immersiveminimaps.zoom_out":  "key.keyboard.page.up",
     "key_key.isometric-renders.area_select":  "key.keyboard.backslash",
     "key_key.jei.focusSearch":  "key.keyboard.h",
-    "key_key.mute_microphone":  "key.keyboard.semicolon"
+    "key_key.mute_microphone":  "key.keyboard.semicolon",
+    "key_key.slice.open_radial_menu": "key.mouse.5",
+    "key_key.slice.click_to_select": "key.keyboard.unknown"
   }
 }
