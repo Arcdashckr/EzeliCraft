@@ -1,0 +1,5 @@
+# Her satıra bir koleksiyon URL'si yazın.
+# Desteklenen formatlar:
+# https://modrinth.com/collection/ID
+
+https://modrinth.com/collection/K3ej09Af

@@ -1,18 +1,21 @@
 {
   "updater_version": "2.1.0",
-  "modpack_version": "2.4.2",
+  "modpack_version": "2.4.3",
   "updater_url": "https://github.com/Arcdashckr/EzeliCraft/raw/refs/heads/main/modpack_updater/dist/Modpack_Guncelleyici_v2.exe",
-  "modpack_url": "https://store5.gofile.io/download/web/94a7ccbb-0b22-4303-a6c2-271249db7e42/EzeliCraft_Modpack_G%C3%BCncelleme_v2.4.2.zip",
+  "modpack_url": "https://github.com/Arcdashckr/EzeliCraft/releases/download/Modpack_Release_v2.4.3/EC_Ascend_Modpack_v2.4.3.zip",
   "updater_urls": [
     "https://github.com/Arcdashckr/EzeliCraft/raw/refs/heads/main/modpack_updater/dist/Modpack_Guncelleyici_v2.exe"
   ],
   "modpack_urls": [
-    "https://store5.gofile.io/download/web/94a7ccbb-0b22-4303-a6c2-271249db7e42/EzeliCraft_Modpack_G%C3%BCncelleme_v2.4.2.zip",
-    "https://pixeldrain.com/api/file/M8rpyABk?download",
-    "https://download1580.mediafire.com/s1am55y3msvgDJ5Ta1inl_OknwNVag32cJSejinSL95MCWSssWEkkotAAQNr2LlrkR-BM8Q6vxTv09NYn0ds28XYk-jRXz3e867gfT5Dhy7eWMT1gbEw420MxlY9qtDDc_FtWw4LvovmWj64JhjlL0rVtFBCOHXMElAwid-syfM/mdgybi97b4qcqf0/EzeliCraft_Modpack_G%C3%BCncelleme_v2.4.2.zip"
+    "https://github.com/Arcdashckr/EzeliCraft/releases/download/Modpack_Update_v2.4.3/EC_Modpack_Guncelleme_v2.4.3.zip"
   ],
   "changelog": [
     "↓↓↓ DAHA FAZLA NOT İÇİN AŞAĞI KAYDIRIN ↓↓↓",
+    "",
+    "v2.4.3 Güncelleme Notları:",
+    "Sunucudan çıkınca çökme sorunu (umarım) giderildi.",
+    "",
+    "v2.4.2 Güncelleme Notları:",
     "• Hoofprint Global harita eklendi. M tuşu ile açabilirsiniz.",
     "• Güncelleyici yeni sürüme yükseltildi ve artık kendini güncelleyebiliyor.",
     "• Distraction Free Recipes modu kaldırıldı.",
@@ -30,6 +33,7 @@
   ],
   "deleted_files": [
     "minecraft/mods/Modpack_Guncelleyici_v2.exe",
+    "minecraft/Modpack_Guncelleyici_v2.exe",
     "minecraft/mods/distraction_free_recipes-fabric-1.2.1-1.21.1.jar",
     "minecraft/mods/fancymenu_fabric_3.2.5_MC_1.21.jar",
     "minecraft/mods/drippyloadingscreen_fabric_3.0.7_MC_1.21.jar",
