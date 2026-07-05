@@ -111,7 +111,7 @@ key_key.spectatorOutlines:key.keyboard.unknown
 key_key.swapOffhand:key.keyboard.f
 key_key.saveToolbarActivator:key.keyboard.unknown
 key_key.loadToolbarActivator:key.keyboard.unknown
-key_key.advancements:key.keyboard.unknown
+key_key.advancements:key.keyboard.l
 key_key.hotbar.1:key.keyboard.1
 key_key.hotbar.2:key.keyboard.2
 key_key.hotbar.3:key.keyboard.3
@@ -135,7 +135,11 @@ key_key.fabricskyboxes.toggle.debug_hud:key.keyboard.unknown
 key_key.ftbultimine:key.keyboard.grave.accent
 key_ftbultimine.change_shape.next:key.keyboard.up
 key_ftbultimine.change_shape.prev:key.keyboard.down
-key_key.isometric-renders.area_select:key.keyboard.unknown
+key_key.hoofprint.open:key.keyboard.m
+key_key.immersiveminimaps.zoom_in:key.keyboard.equal
+key_key.immersiveminimaps.zoom_out:key.keyboard.minus
+key_key.immersiveminimaps.cave_mode:key.keyboard.backspace
+key_key.isometric-renders.area_select:key.keyboard.backslash
 key_key.jade.config:key.keyboard.unknown
 key_key.jade.show_overlay:key.keyboard.f4
 key_key.jade.toggle_liquid:key.keyboard.unknown
@@ -144,7 +148,7 @@ key_key.jade.show_uses:key.keyboard.unknown
 key_key.jade.narrate:key.keyboard.unknown
 key_key.jade.show_details_alternative:key.keyboard.unknown
 key_key.jei.toggleOverlay:key.keyboard.o
-key_key.jei.focusSearch:key.keyboard.unknown
+key_key.jei.focusSearch:key.keyboard.h
 key_key.jei.previousPage:key.keyboard.unknown
 key_key.jei.nextPage:key.keyboard.unknown
 key_key.jei.toggleBookmarkOverlay:key.keyboard.unknown
@@ -207,8 +211,8 @@ key_key.travelersbackpack.toggle_upgrade_3:key.keyboard.unknown
 key_key.uilib.open_test_menu:key.keyboard.unknown
 key_key.push_to_talk:key.mouse.4
 key_key.whisper:key.keyboard.unknown
-key_key.mute_microphone:key.keyboard.f8
-key_key.disable_voice_chat:key.keyboard.unknown
+key_key.mute_microphone:key.keyboard.semicolon
+key_key.disable_voice_chat:key.keyboard.period
 key_key.hide_icons:key.keyboard.f5
 key_key.voice_chat:key.keyboard.v
 key_key.voice_chat_settings:key.keyboard.unknown
