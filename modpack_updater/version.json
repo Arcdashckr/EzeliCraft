@@ -1,6 +1,6 @@
 {
   "updater_version": "2.2.0",
-  "modpack_version": "2.4.4",
+  "modpack_version": "2.4.5",
   "bootstrap_version": "2.4.4",
   "updater_url": "https://github.com/Arcdashckr/EzeliCraft/raw/refs/heads/main/modpack_updater/dist/Modpack_Guncelleyici_v2.exe",
   "modpack_url": "https://github.com/Arcdashckr/EzeliCraft/releases/download/Modpack_Release_v2.4.3/EC_Ascend_Modpack_v2.4.3.zip",
@@ -62,7 +62,26 @@
         "key_key.mute_microphone":  "key.keyboard.semicolon",
         "key_key.slice.open_radial_menu": "key.mouse.5",
         "key_key.slice.click_to_select": "key.keyboard.unknown",
-        "resourcePacks":  "[\"vanilla\",\"serilum_mod_translations\",\"fabric\",\"moonlight:merged_pack\",\"file/VanillaTweaks_Ascend_MC1.21.x_latest.zip\",\"file/Spring_Flowers_(1.21).zip\",\"file/Retired_Wandering_Trader_(1.21).zip\",\"file/Remodeled-Doors1.4.zip\",\"file/axolotl_bucket_variants-v34.zip\",\"file/better-cauldrons.zip\",\"file/cubic-sun-moon-v1-8a.zip\",\"file/sculk-jaw.zip\",\"file/unique-dusts-v2.zip\",\"file/[1.6] Enhanced Boss Bars.zip\",\"file/Xaero\\u0027s Vanilla GUI.zip\",\"file/Permits v0.1.0 - 1.14-1.21.3.zip\",\"file/New_Style_Squid_(1.21).zip\",\"file/More_Nether_Roots_(1.21).zip\",\"file/More_Nether_Fungi_(1.21).zip\",\"file/More_Hanging_Roots_(1.21).zip\",\"file/More_Fungi_(1.21).zip\",\"file/More_Cherries_(1.21).zip\",\"file/More_Azaleas_(1.21).zip\",\"file/Living_Dragon_(1.21).zip\",\"file/Jakes-Build-Tools-Resources.zip\",\"file/Infested Blocks (Overlay).zip\",\"file/Hot_and_Cold_Bucket_(1.21).zip\",\"file/Honored_Heroes_v1_1.20+.zip\",\"file/JustExpressions_v1.1.zip\",\"file/Flower_Golems_v2.zip\",\"file/FancyHearts[1.20.5-1.20.6].zip\",\"file/EvenBetterEnchants_v2_r1.zip\",\"file/CraftingTable-Reimagined-[v1].zip\",\"file/Blocky-Dripstone v1.0.zip\",\"file/Biome Pillagers.zip\",\"file/Better debug sticks.zip\",\"file/Banner_TextRP-v1.4.2.zip\",\"file/BACAP Language Pack 1.19.zip\",\"file/Azalea_Icons_(1.21).zip\",\"file/Animated_Furnaces_(1.21).zip\",\"file/Alternative Rain Sounds 1.20-1.20.X.zip\",\"file/AccurateDigitalClock-32x-24h.zip\",\"file/2.0.0v_VisualStews.zip\",\"file/2.0.0v_VisualGoatHorns.zip\",\"file/2.0.0v_VisualFireworks_UnOfficial.zip\",\"file/AdvancedEnchantmentTooltips-2.0.zip\",\"betterbeds:fancyconnectedbeds\",\"file/remains-of-ancient-civilization.zip\",\"file/anvil-sides.zip\",\"file/Unstable Falling Blocks.zip\",\"file/Simple Grass Flowers v1.9.2.zip\",\"copperrails:copperrails3d\",\"file/RAYs_3D_Rails_v3.0.zip\",\"file/RAYs_3D_Ladders_v2.0.zip\",\"file/Default-Dark-Mode-1.20.2+-2025.5.0.zip\",\"file/lDarkmode l [truncated]"
+        "resourcePacks":  "[\"vanilla\",\"serilum_mod_translations\",\"fabric\",\"moonlight:merged_pack\",\"file/VanillaTweaks_Ascend_MC1.21.x_latest.zip\",\"file/Spring_Flowers_(1.21).zip\",\"file/Retired_Wandering_Trader_(1.21).zip\",\"file/Remodeled-Doors1.4.zip\",\"file/axolotl_bucket_variants-v34.zip\",\"file/better-cauldrons.zip\",\"file/cubic-sun-moon-v1-8a.zip\",\"file/sculk-jaw.zip\",\"file/unique-dusts-v2.zip\",\"file/[1.6] Enhanced Boss Bars.zip\",\"file/Xaero\\u0027s Vanilla GUI.zip\",\"file/Permits v0.1.0 - 1.14-1.21.3.zip\",\"file/New_Style_Squid_(1.21).zip\",\"file/More_Nether_Roots_(1.21).zip\",\"file/More_Nether_Fungi_(1.21).zip\",\"file/More_Hanging_Roots_(1.21).zip\",\"file/More_Fungi_(1.21).zip\",\"file/More_Cherries_(1.21).zip\",\"file/More_Azaleas_(1.21).zip\",\"file/Living_Dragon_(1.21).zip\",\"file/Jakes-Build-Tools-Resources.zip\",\"file/Infested Blocks (Overlay).zip\",\"file/Hot_and_Cold_Bucket_(1.21).zip\",\"file/Honored_Heroes_v1_1.20+.zip\",\"file/JustExpressions_v1.1.zip\",\"file/Flower_Golems_v2.zip\",\"file/FancyHearts[1.20.5-1.20.6].zip\",\"file/EvenBetterEnchants_v2_r1.zip\",\"file/CraftingTable-Reimagined-[v1].zip\",\"file/Blocky-Dripstone v1.0.zip\",\"file/Biome Pillagers.zip\",\"file/Better debug sticks.zip\",\"file/Banner_TextRP-v1.4.2.zip\",\"file/BACAP Language Pack 1.19.zip\",\"file/Azalea_Icons_(1.21).zip\",\"file/Animated_Furnaces_(1.21).zip\",\"file/Alternative Rain Sounds 1.20-1.20.X.zip\",\"file/AccurateDigitalClock-32x-24h.zip\",\"file/2.0.0v_VisualStews.zip\",\"file/2.0.0v_VisualGoatHorns.zip\",\"file/2.0.0v_VisualFireworks_UnOfficial.zip\",\"file/AdvancedEnchantmentTooltips-2.0.zip\",\"betterbeds:fancyconnectedbeds\",\"file/remains-of-ancient-civilization.zip\",\"file/anvil-sides.zip\",\"file/Unstable Falling Blocks.zip\",\"file/Simple Grass Flowers v1.9.2.zip\",\"copperrails:copperrails3d\",\"file/RAYs_3D_Rails_v3.0.zip\",\"file/RAYs_3D_Ladders_v2.0.zip\",\"file/Default-Dark-Mode-1.20.2+-2025.5.0.zip\",\"file/lDarkmode l [truncated]",
+        "incompatibleResourcePacks":  "[\"appleskin\",\"armortrimitemfix\",\"balm\",\"carryon\",\"catconfig-mc\",\"chatnotify\",\"clicksigns\",\"collective\",\"dramaticdoors\",\"drippyloadingscreen\",\"end_respawn_anchor\",\"entity_model_features\",\"entity_sound_features\",\"entity_texture_features\",\"excessive_building\",\"fancymenu\",\"jade\",\"jei\",\"kiwi\",\"konkrete\",\"letsparkour\",\"mcwdoors\",\"minecraftcapes\",\"patchouli\",\"runiclib\",\"slice\",\"terrablender\",\"toms_storage\",\"tweakeroo\",\"txnilib\",\"watut\",\"waystones\",\"xaerolib\",\"xaerominimap\",\"xaeroworldmap\",\"yet_another_config_lib_v3\",\"file/lModded lContainers lDark.zip\",\"file/Re-Simple-Storage.zip\",\"file/Sparkles_1.21.x_v1.1.3.zip\",\"file/reimagined_incendium_textures-v1.zip\"]"
+      }
+    },
+    {
+      "from_version": "2.4.4",
+      "to_version": "2.4.5",
+      "modpack_url": "https://github.com/Arcdashckr/EzeliCraft/releases/download/Modpack_Update_v2.4.5/EC_Modpack_Guncelleme_v2.4.5.zip",
+      "modpack_urls": [
+        "https://github.com/Arcdashckr/EzeliCraft/releases/download/Modpack_Update_v2.4.5/EC_Modpack_Guncelleme_v2.4.5.zip"
+      ],
+      "changelog": [
+        "v2.4.5 Güncelleme Notları:",
+        "• Yeni yemek çeşitleri eklendi. (Farmers Delight eklentileri)",
+        "• Farklı yapı çeşitleri eklendi. (Repurposed Structures)",
+        "• Discord oynuyor kısmı eklendi."
+      ],
+      "deleted_files": [],
+      "options_updates": {
+        "incompatibleResourcePacks":  "[\"appleskin\",\"armortrimitemfix\",\"balm\",\"brewinandchewin\",\"carryon\",\"catconfig-mc\",\"chatnotify\",\"clicksigns\",\"collective\",\"dramaticdoors\",\"drippyloadingscreen\",\"end_respawn_anchor\",\"entity_model_features\",\"entity_sound_features\",\"entity_texture_features\",\"excessive_building\",\"fancymenu\",\"jade\",\"jei\",\"kiwi\",\"konkrete\",\"letsparkour\",\"mcwdoors\",\"minecraftcapes\",\"mynethersdelight\",\"patchouli\",\"runiclib\",\"slice\",\"terrablender\",\"toms_storage\",\"tweakeroo\",\"txnilib\",\"watut\",\"waystones\",\"xaerolib\",\"xaerominimap\",\"xaeroworldmap\",\"yet_another_config_lib_v3\",\"file/lModded lContainers lDark.zip\",\"file/Re-Simple-Storage.zip\",\"file/Sparkles_1.21.x_v1.1.3.zip\",\"file/reimagined_incendium_textures-v1.zip\"]"
       }
     }
   ],
