@@ -13,7 +13,7 @@ from threading import Thread
 
 # ⚠️ GITHUB'DAKİ version.json DOSYASININ "RAW" LİNKİ
 JSON_URL = "https://raw.githubusercontent.com/Arcdashckr/EzeliCraft/main/modpack_updater/version.json"
-CURRENT_UPDATER_VERSION = "2.2.0"
+CURRENT_UPDATER_VERSION = "2.2.1"
 LOG_FILE_NAME = "guncelleyici.log"
 
 
@@ -174,6 +174,19 @@ class IncrementalLauncherApp:
         self.btn_update = tk.Button(self.root, text='Güncellemeyi Denetle', font=('Segoe UI', 10, 'bold'), bg=self.accent_color, fg='#111827', activebackground='#93c5fd', activeforeground='#111827', bd=0, padx=22, pady=8, state='disabled')
         self.btn_update.pack(pady=(4, 20))
 
+        # Additional action buttons
+        self.actions_frame = tk.Frame(self.root, bg=self.bg_color)
+        self.actions_frame.pack(pady=(0, 12))
+
+        self.btn_fix_resourcepacks = tk.Button(self.actions_frame, text='ResourcePack Sırasını Düzelt', font=('Segoe UI', 9), bg='#374151', fg=self.text_color, bd=0, padx=12, pady=6, state='disabled', command=self.fix_resourcepack_order)
+        self.btn_fix_resourcepacks.pack(side='left', padx=(0, 8))
+
+        self.btn_versions = tk.Button(self.actions_frame, text='Sürüm Notları', font=('Segoe UI', 9), bg='#374151', fg=self.text_color, bd=0, padx=12, pady=6, state='disabled', command=self.open_version_changelogs_window)
+        self.btn_versions.pack(side='left', padx=(0, 8))
+
+        self.btn_repair = tk.Button(self.actions_frame, text='Onar', font=('Segoe UI', 9, 'bold'), bg='#f59e0b', fg='#111827', bd=0, padx=12, pady=6, state='disabled', command=self.repair_now)
+        self.btn_repair.pack(side='left')
+
     def toggle_changelog(self):
         self.changelog_expanded = not self.changelog_expanded
         self.toggle_changelog_btn.config(text='Daralt' if self.changelog_expanded else 'Genişlet')
@@ -199,6 +212,147 @@ class IncrementalLauncherApp:
             for line in lines:
                 self.changelog_box.insert(tk.END, f'{line}\n')
         self.changelog_box.config(state='disabled')
+
+    def _find_options_for_latest(self):
+        # Prefer options_updates tied to the latest to_version in update_chain
+        opts = self.remote_data.get('options_updates', {}) or {}
+        try:
+            latest = self.remote_data.get('modpack_version')
+            chain = self.remote_data.get('update_chain', []) or []
+            for step in reversed(chain):
+                if str(step.get('to_version')) == str(latest):
+                    if step.get('options_updates'):
+                        return step.get('options_updates', {})
+        except Exception:
+            pass
+        return opts
+
+    def fix_resourcepack_order(self):
+        try:
+            opts = self._find_options_for_latest() or {}
+            rp = opts.get('resourcePacks') or opts.get('resourcePacks') or self.remote_data.get('options_updates', {}).get('resourcePacks')
+            irp = opts.get('incompatibleResourcePacks') or self.remote_data.get('options_updates', {}).get('incompatibleResourcePacks')
+            updates = {}
+            if rp:
+                updates['resourcePacks'] = rp
+            if irp:
+                updates['incompatibleResourcePacks'] = irp
+            if not updates:
+                messagebox.showinfo('Bilgi', 'version.json içinde resource pack sırası bulunamadı.')
+                return
+            self.update_options_txt(updates)
+            messagebox.showinfo('Başarılı', 'Resource pack sırası uygulandı. Minecraft içinde kontrol edin ve gerekirse yeniden başlatın.')
+        except Exception as e:
+            self.log(f'Resource pack sırası düzeltilirken hata: {e}')
+            messagebox.showerror('Hata', f'Resource pack sırası uygulanamadı:\n{e}')
+
+    def open_version_changelogs_window(self):
+        try:
+            win = tk.Toplevel(self.root)
+            win.title('Sürüm Notları')
+            win.geometry('600x420')
+            win.configure(bg=self.bg_color)
+
+            left = tk.Frame(win, bg=self.card_color)
+            left.pack(side='left', fill='y', padx=(12,6), pady=12)
+
+            right = tk.Frame(win, bg=self.card_color)
+            right.pack(side='right', fill='both', expand=True, padx=(6,12), pady=12)
+
+            list_box = tk.Frame(left, bg=self.card_color)
+            list_box.pack(fill='y')
+
+            def show_lines(lines):
+                txt.config(state='normal')
+                txt.delete('1.0', tk.END)
+                if not lines:
+                    txt.insert('1.0', 'Bu sürüm için değişiklik notu bulunmuyor.')
+                else:
+                    for line in lines:
+                        txt.insert(tk.END, f'{line}\n')
+                txt.config(state='disabled')
+
+            # Top-level changelog
+            tk.Button(list_box, text=f'All Notes', font=('Segoe UI', 9), bg='#374151', fg=self.text_color, bd=0, padx=8, pady=6, command=lambda: show_lines(self.remote_data.get('changelog', []))).pack(fill='x', pady=4)
+
+            # Per-step buttons
+            for step in (self.remote_data.get('update_chain') or []):
+                ver = step.get('to_version') or f"{step.get('from_version')} -> {step.get('to_version')}"
+                tk.Button(list_box, text=f'v{ver}', font=('Segoe UI', 9), bg='#374151', fg=self.text_color, bd=0, padx=8, pady=6, command=lambda s=step: show_lines(s.get('changelog', []))).pack(fill='x', pady=2)
+
+            # Pending updates (if any)
+            pending = self.remote_data.get('pending_updates') or []
+            if pending:
+                sep = tk.Label(list_box, text='-- Bekleyen Güncellemeler --', bg=self.card_color, fg=self.text_color)
+                sep.pack(fill='x', pady=(8,4))
+                for idx, step in enumerate(pending, 1):
+                    label = f'Adım {idx}: {step.get("from_version")} -> {step.get("to_version")}'
+                    tk.Button(list_box, text=label, font=('Segoe UI', 9), bg='#374151', fg=self.text_color, bd=0, padx=8, pady=6, command=lambda s=step: show_lines(s.get('changelog', []))).pack(fill='x', pady=2)
+
+            txt = tk.Text(right, font=('Segoe UI', 9), bg=self.card_color, fg=self.text_color, bd=0, wrap='word')
+            txt.pack(fill='both', expand=True)
+            txt.insert('1.0', 'Sürüm notlarından birini seçin.')
+            txt.config(state='disabled')
+
+            tk.Button(win, text='Kapat', command=win.destroy, bg=self.bg_color, fg=self.text_color, bd=0).pack(pady=(0,8))
+        except Exception as e:
+            self.log(f'Sürüm notları penceresi açılamadı: {e}')
+
+    def repair_now(self):
+        Thread(target=self._repair_background, daemon=True).start()
+
+    def _repair_background(self):
+        try:
+            self.btn_repair.config(state='disabled')
+            self.status_label.config(text='Onarım uygulanıyor...', fg=self.text_color)
+            self.root.update_idletasks()
+
+            zip_path = os.path.join(self.current_dir, 'temp_repair.zip')
+            urls = self.remote_data.get('modpack_urls') or self.remote_data.get('modpack_url')
+            if isinstance(urls, str):
+                urls = [urls]
+            if not urls:
+                raise Exception('Onarım için modpack URLsi bulunamadı.')
+
+            download_success = False
+            for idx, url in enumerate(urls):
+                try:
+                    opener = urllib.request.build_opener()
+                    opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
+                    urllib.request.install_opener(opener)
+                    urllib.request.urlretrieve(url, zip_path, reporthook=self.download_progress)
+                    if zipfile.is_zipfile(zip_path):
+                        download_success = True
+                        break
+                    if os.path.exists(zip_path):
+                        os.remove(zip_path)
+                except Exception as e:
+                    self.log(f'Onarım indirilemedi ({url}): {e}')
+                    if os.path.exists(zip_path):
+                        os.remove(zip_path)
+
+            if not download_success:
+                raise Exception('Onarım indirilemedi.')
+
+            # apply as a single step
+            step = {'options_updates': self.remote_data.get('options_updates', {}), 'deleted_files': self.remote_data.get('deleted_files', [])}
+            self.apply_patch_zip(zip_path, step, 1, 1)
+            if os.path.exists(zip_path):
+                os.remove(zip_path)
+            self.update_options_txt(step.get('options_updates', {}))
+            self.remove_deleted_files(step.get('deleted_files', []))
+
+            messagebox.showinfo('Başarılı', 'Onarım tamamlandı.')
+            self.status_label.config(text='Onarım tamamlandı.', fg=self.success_color)
+        except Exception as e:
+            self.log(f'Onarım hatası: {e}')
+            messagebox.showerror('Hata', f'Onarım başarısız:\n{e}')
+            self.status_label.config(text=f'Onarım hatası: {e}', fg=self.error_color)
+        finally:
+            try:
+                self.btn_repair.config(state='normal')
+            except Exception:
+                pass
 
     def sanitize_folder_on_startup(self):
         current_exe = sys.executable
@@ -309,19 +463,26 @@ class IncrementalLauncherApp:
 
             self.set_info_text(local_ver, latest_version, pending_updates)
             if pending_updates:
-                changelog_lines = []
-                for idx, step in enumerate(pending_updates, 1):
-                    changelog_lines.append(f'Adım {idx}: {step.get("from_version")} -> {step.get("to_version")}')
-                    for line in step.get('changelog', []) or []:
-                        changelog_lines.append(line)
-                    changelog_lines.append('')
-                self.show_changelog_lines(changelog_lines)
+                # Save pending updates to remote_data so the 'Sürüm Notları' window can display them
+                try:
+                    self.remote_data['pending_updates'] = pending_updates
+                except Exception:
+                    pass
+                # Don't show full changelog on main screen; direct user to the Sürüm Notları window
+                self.show_changelog_lines(['Yeni güncelleme bulundu. Detaylı değişiklik notları için "Sürüm Notları" butonuna tıklayın.'])
                 self.status_label.config(text=f'Yeni güncelleme bulundu: {local_ver} -> {latest_version}', fg=self.error_color)
                 self.btn_update.config(text='Güncellemeyi Başlat', bg=self.accent_color, fg='#111827', state='normal', command=self.start_update_thread)
+                self.btn_fix_resourcepacks.config(state='normal')
+                self.btn_versions.config(state='normal')
+                self.btn_repair.config(state='normal')
             else:
-                self.show_changelog_lines(self.remote_data.get('changelog', ['Bu sürüm için değişiklik notu bulunmuyor.']))
+                # Main changelog hidden on main screen; instruct user to open version notes window
+                self.show_changelog_lines(['Güncelleme notlarını görmek için "Sürüm Notları" butonuna tıklayın.'])
                 self.status_label.config(text=f'Mod paketi tamamen güncel! (Sürüm: v{local_ver})', fg=self.success_color)
                 self.btn_update.config(text='Zaten Güncel', bg=self.success_color, fg='#111827', state='disabled')
+                self.btn_fix_resourcepacks.config(state='normal')
+                self.btn_versions.config(state='normal')
+                self.btn_repair.config(state='normal')
 
         except Exception as e:
             self.log(f'Manifest yüklenirken hata: {e}')
