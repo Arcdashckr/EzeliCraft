@@ -24,6 +24,12 @@ def parse_version(version_value):
     return tuple(int(part) for part in re.findall(r'\d+', str(version_value or '0')))
 
 
+def should_require_launcher_update(current_version, remote_version):
+    if not remote_version:
+        return False
+    return parse_version(remote_version) > parse_version(current_version)
+
+
 def collect_pending_updates(local_version, remote_data):
     local_version = str(local_version or '0.0.0')
 
@@ -107,6 +113,7 @@ class IncrementalLauncherApp:
         self.skipped_files = []
         self.current_server_info = ''
         self.log_file = os.path.join(self.current_dir, LOG_FILE_NAME)
+        self.launcher_update_state_file = os.path.join(self.current_dir, 'launcher_update_state.json')
         self.changelog_expanded = False
 
         self.create_widgets()
@@ -121,6 +128,118 @@ class IncrementalLauncherApp:
         with open(self.log_file, 'a', encoding='utf-8') as fh:
             fh.write(line + '\n')
         print(line)
+
+    def load_launcher_update_state(self):
+        if not os.path.exists(self.launcher_update_state_file):
+            return {}
+        try:
+            with open(self.launcher_update_state_file, 'r', encoding='utf-8') as fh:
+                return json.load(fh)
+        except Exception:
+            return {}
+
+    def save_launcher_update_state(self, state):
+        try:
+            with open(self.launcher_update_state_file, 'w', encoding='utf-8') as fh:
+                json.dump(state, fh, ensure_ascii=False, indent=2)
+        except Exception as e:
+            self.log(f'Launcher güncelleme durumu kaydedilemedi: {e}')
+
+    def should_prompt_for_launcher_update(self, remote_version):
+        if not should_require_launcher_update(CURRENT_UPDATER_VERSION, remote_version):
+            return False
+        state = self.load_launcher_update_state()
+        if state.get('dismissed_version') == str(remote_version):
+            return False
+        if state.get('accepted_version') == str(remote_version):
+            return False
+        return True
+
+    def remember_launcher_update_decision(self, remote_version, accepted):
+        state = self.load_launcher_update_state()
+        state['last_prompted_version'] = str(remote_version)
+        if accepted:
+            state['accepted_version'] = str(remote_version)
+        else:
+            state['dismissed_version'] = str(remote_version)
+        self.save_launcher_update_state(state)
+
+    def prompt_for_launcher_update(self, remote_updater_version):
+        self.root.after(0, lambda: self._prompt_for_launcher_update(remote_updater_version))
+
+    def _prompt_for_launcher_update(self, remote_updater_version):
+        if not self.root.winfo_exists():
+            return
+        decision = messagebox.askyesno(
+            'Yeni güncelleyici sürümü bulundu',
+            f'Yeni bir güncelleyici sürümü mevcut: v{CURRENT_UPDATER_VERSION} -> v{remote_updater_version}\n\n'
+            'Yeni sürümü indirip kurmak ister misiniz?\n'
+            'Hayır seçerseniz program mevcut sürümle çalışmaya devam eder.'
+        )
+        self.remember_launcher_update_decision(remote_updater_version, bool(decision))
+        if decision:
+            self.install_launcher_update(remote_updater_version)
+        else:
+            self.status_label.config(
+                text=f'Yeni güncelleyici sürümü bulundu (v{remote_updater_version}), mevcut sürümle devam ediliyor.',
+                fg=self.accent_color
+            )
+
+    def install_launcher_update(self, remote_updater_version):
+        self.status_label.config(text=f'Yeni güncelleyici sürümü indiriliyor (v{remote_updater_version})...', fg=self.accent_color)
+        self.root.update_idletasks()
+
+        current_exe = sys.executable
+        if not current_exe.endswith('.exe'):
+            messagebox.showinfo('Bilgi', 'Bu çalışma ortamında güncelleyici kendini güncelleyemez; lütfen paketlenmiş .exe sürümünü kullanın.')
+            self.status_label.config(text='Güncelleyici güncelleme işlemi için .exe ortamı bekliyor.', fg=self.muted_color)
+            return
+
+        import time
+        timestamp = int(time.time())
+        temp_exe_name = f'Modpack_Guncelleyici_temp_{timestamp}.exe'
+        new_exe_path = os.path.join(self.current_dir, temp_exe_name)
+
+        updater_urls = self.remote_data.get('updater_urls', self.remote_data.get('updater_url'))
+        if isinstance(updater_urls, str):
+            updater_urls = [updater_urls]
+
+        download_success = False
+        for idx, url in enumerate(updater_urls):
+            try:
+                self.status_label.config(text=f'Launcher indiriliyor (Sunucu {idx + 1}/{len(updater_urls)})...')
+                self.root.update_idletasks()
+
+                opener = urllib.request.build_opener()
+                opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
+                urllib.request.install_opener(opener)
+                urllib.request.urlretrieve(url, new_exe_path)
+                download_success = True
+                break
+            except Exception as e:
+                self.log(f'Launcher indirme hatası: {url} -> {e}')
+                if os.path.exists(new_exe_path):
+                    os.remove(new_exe_path)
+
+        if not download_success:
+            messagebox.showerror('Hata', 'Güncelleyici dosyası hiçbir indirme sunucusundan çekilemedi!')
+            self.status_label.config(text='Güncelleyici indirme başarısız oldu.', fg=self.error_color)
+            return
+
+        pid = os.getpid()
+        final_exe_name = os.path.join(self.current_dir, 'Modpack_Guncelleyici_v2.exe')
+        ps_script = f'''
+        Start-Sleep -Seconds 1
+        $proc = Get-Process -Id {pid} -ErrorAction SilentlyContinue
+        if ($proc) {{ $proc | Wait-Process -Timeout 5 }}
+        if (Test-Path "{current_exe}") {{ Remove-Item "{current_exe}" -Force }}
+        if (Test-Path "{final_exe_name}") {{ Remove-Item "{final_exe_name}" -Force }}
+        Rename-Item "{new_exe_path}" "Modpack_Guncelleyici_v2.exe" -Force
+        Start-Process "{final_exe_name}"
+        '''
+        subprocess.Popen(['powershell', '-Command', ps_script], creationflags=subprocess.CREATE_NO_WINDOW)
+        self.root.destroy()
+        sys.exit(0)
 
     def create_widgets(self):
         self.title_frame = tk.Frame(self.root, bg=self.bg_color)
@@ -396,56 +515,14 @@ class IncrementalLauncherApp:
             self.log(f'Remote manifest yüklendi: {JSON_URL}')
 
             remote_updater_ver = self.remote_data.get('updater_version', '1.0.0')
-            if remote_updater_ver != CURRENT_UPDATER_VERSION:
-                self.status_label.config(text=f'Launcher yeni sürüme (v{remote_updater_ver}) yükseltiliyor...', fg=self.accent_color)
+            if should_require_launcher_update(CURRENT_UPDATER_VERSION, remote_updater_ver):
+                self.status_label.config(text=f'Yeni güncelleyici sürümü bulundu: v{remote_updater_ver}', fg=self.accent_color)
                 self.root.update_idletasks()
-
-                current_exe = sys.executable
-                if current_exe.endswith('.exe'):
-                    import time
-                    timestamp = int(time.time())
-                    temp_exe_name = f'Modpack_Guncelleyici_temp_{timestamp}.exe'
-                    new_exe_path = os.path.join(self.current_dir, temp_exe_name)
-
-                    updater_urls = self.remote_data.get('updater_urls', self.remote_data.get('updater_url'))
-                    if isinstance(updater_urls, str):
-                        updater_urls = [updater_urls]
-
-                    download_success = False
-                    for idx, url in enumerate(updater_urls):
-                        try:
-                            self.status_label.config(text=f'Launcher indiriliyor (Sunucu {idx + 1}/{len(updater_urls)})...')
-                            self.root.update_idletasks()
-
-                            opener = urllib.request.build_opener()
-                            opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
-                            urllib.request.install_opener(opener)
-                            urllib.request.urlretrieve(url, new_exe_path)
-                            download_success = True
-                            break
-                        except Exception as e:
-                            self.log(f'Launcher indirme hatası: {url} -> {e}')
-                            if os.path.exists(new_exe_path):
-                                os.remove(new_exe_path)
-
-                    if not download_success:
-                        raise Exception('Güncelleyici dosyası hiçbir indirme sunucusundan çekilemedi!')
-
-                    pid = os.getpid()
-                    final_exe_name = os.path.join(self.current_dir, 'Modpack_Guncelleyici_v2.exe')
-                    ps_script = f'''
-                    Start-Sleep -Seconds 1
-                    $proc = Get-Process -Id {pid} -ErrorAction SilentlyContinue
-                    if ($proc) {{ $proc | Wait-Process -Timeout 5 }}
-                    if (Test-Path "{current_exe}") {{ Remove-Item "{current_exe}" -Force }}
-                    if (Test-Path "{final_exe_name}") {{ Remove-Item "{final_exe_name}" -Force }}
-                    Rename-Item "{new_exe_path}" "Modpack_Guncelleyici_v2.exe" -Force
-                    Start-Process "{final_exe_name}"
-                    '''
-                    subprocess.Popen(['powershell', '-Command', ps_script], creationflags=subprocess.CREATE_NO_WINDOW)
-                    self.root.destroy()
-                    sys.exit(0)
-                    return
+                if self.should_prompt_for_launcher_update(remote_updater_ver):
+                    self.prompt_for_launcher_update(remote_updater_ver)
+                else:
+                    self.log(f'Launcher güncelleme bildirimi atlandı: v{remote_updater_ver}')
+                return
 
             local_version_path = os.path.join(self.current_dir, 'local_version.json')
             local_ver = '0.0.0'
